@@ -32,10 +32,6 @@
       <HintPath>$(SpaceEngineersBinDir)/SpaceEngineers.Game.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="ParallelTasks">
-      <HintPath>$(SpaceEngineersBinDir)/ParallelTasks.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="ProtoBuf">
       <HintPath>$(SpaceEngineersBinDir)/ProtoBuf.Net.Core.dll</HintPath>
       <Private>false</Private>

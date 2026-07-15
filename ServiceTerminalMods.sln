@@ -1,9 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipInsurance", "ShipInsurance\ShipInsurance.csproj", "{97427061-F73B-4581-9369-7513F5DBD9C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTerminalFramework", "ServiceTerminalFramework\ServiceTerminalFramework.csproj", "{43BFA83A-45B5-44D0-812E-0B813F470BEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +16,10 @@ Global
 		{97427061-F73B-4581-9369-7513F5DBD9C7}.Debug|x64.Build.0 = Debug|x64
 		{97427061-F73B-4581-9369-7513F5DBD9C7}.Release|x64.ActiveCfg = Release|x64
 		{97427061-F73B-4581-9369-7513F5DBD9C7}.Release|x64.Build.0 = Release|x64
+		{43BFA83A-45B5-44D0-812E-0B813F470BEC}.Debug|x64.ActiveCfg = Debug|x64
+		{43BFA83A-45B5-44D0-812E-0B813F470BEC}.Debug|x64.Build.0 = Debug|x64
+		{43BFA83A-45B5-44D0-812E-0B813F470BEC}.Release|x64.ActiveCfg = Release|x64
+		{43BFA83A-45B5-44D0-812E-0B813F470BEC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

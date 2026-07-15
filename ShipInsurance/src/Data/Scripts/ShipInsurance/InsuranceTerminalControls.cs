@@ -201,42 +201,48 @@ namespace ShipInsurance
             {
                 PolicySummary policy = _servicePolicies[i];
                 long choice = nextChoice++;
+                if (policy.PolicyId == 0)
+                {
+                    _serviceChoiceGrids[choice] = policy.SelectionGridId;
+                    if (policy.SelectionGridId == _selectedServiceGridId)
+                        selectedChoice = choice;
+                    choices.Add(new InsuranceServiceChoice
+                    {
+                        Key = choice,
+                        GridId = policy.SelectionGridId,
+                        Label = "NEW POLICY  |  INSURE " +
+                            InsuranceRuntime.Money(policy.EnrollmentCost) + " SC  |  " +
+                            policy.GridName + "  |  " +
+                            policy.DistanceMeters.ToString("0", CultureInfo.InvariantCulture) + " m"
+                    });
+                    continue;
+                }
+
                 _serviceChoicePolicies[choice] = policy.PolicyId;
                 if (policy.PolicyId == _selectedPolicyId) selectedChoice = choice;
                 long remaining = InsuranceMath.RemainingSeconds(policy.RecoveryReadyUtcTicks,
                     DateTime.UtcNow.Ticks);
                 string state = policy.RecoveryReadyUtcTicks > 0
                     ? remaining > 0 ? "recovery " + InsuranceRuntime.Duration(remaining) : "recovery ready"
-                    : policy.TotalLoss ? "total loss" : policy.Remote ? "remote recovery" : "active";
+                    : policy.TotalLoss ? "total loss" : policy.Remote ? "remote recovery" :
+                        policy.LossRatio > 0.0
+                            ? "damage " + policy.LossRatio.ToString("P0", CultureInfo.InvariantCulture)
+                            : "active";
+                string price = (policy.Recovery ? "RESTORE " : "REPAIR ") +
+                    InsuranceRuntime.Money(policy.ClaimCost) + " SC";
+                if (policy.TransportCost > 0)
+                {
+                    price += policy.RecoveryReadyUtcTicks > 0
+                        ? "  |  TRANSPORT PAID " +
+                            InsuranceRuntime.Money(policy.TransportCost) + " SC"
+                        : " + TRANSPORT " + InsuranceRuntime.Money(policy.TransportCost) + " SC";
+                }
                 choices.Add(new InsuranceServiceChoice
                 {
                     Key = choice,
                     PolicyId = policy.PolicyId,
-                    Label = "POLICY #" + policy.PolicyId + "  |  " + policy.GridName + "  |  " +
-                        state.ToUpperInvariant()
-                });
-            }
-
-            List<IMyCubeGrid> grids = FindNearbyOwnedGrids();
-            IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
-            IMyFunctionalBlock terminal = InsuranceRuntime.FindServiceTerminal(_servicePolicyTerminalId);
-            Vector3D servicePosition = terminal != null
-                ? terminal.GetPosition()
-                : player == null ? Vector3D.Zero : player.GetPosition();
-            for (int i = 0; i < grids.Count; i++)
-            {
-                IMyCubeGrid grid = grids[i];
-                long choice = nextChoice++;
-                _serviceChoiceGrids[choice] = grid.EntityId;
-                if (grid.EntityId == _selectedServiceGridId) selectedChoice = choice;
-                string name = string.IsNullOrWhiteSpace(grid.CustomName) ? grid.DisplayName : grid.CustomName;
-                double distance = Vector3D.Distance(servicePosition, grid.WorldAABB.Center);
-                choices.Add(new InsuranceServiceChoice
-                {
-                    Key = choice,
-                    GridId = grid.EntityId,
-                    Label = "NEW POLICY  |  " + name + "  |  " +
-                        distance.ToString("0", CultureInfo.InvariantCulture) + " m"
+                    Label = "POLICY #" + policy.PolicyId + "  |  " + price + "  |  " +
+                        policy.GridName + "  |  " + state.ToUpperInvariant()
                 });
             }
 
@@ -293,52 +299,6 @@ namespace ShipInsurance
         internal void ExecuteServiceAction(IMyTerminalBlock terminal, string command)
         {
             SendServiceTerminalCommand(terminal, command);
-        }
-
-        private List<IMyCubeGrid> FindNearbyOwnedGrids()
-        {
-            List<IMyCubeGrid> grids = new List<IMyCubeGrid>();
-            IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
-            if (player == null) return grids;
-
-            IMyFunctionalBlock terminal = InsuranceRuntime.FindServiceTerminal(_servicePolicyTerminalId);
-            Vector3D center = terminal == null ? player.GetPosition() : terminal.GetPosition();
-            BoundingSphereD sphere = new BoundingSphereD(center,
-                InsuranceRuntime.ServiceGridDiscoveryRange);
-            List<IMyEntity> entities = MyAPIGateway.Entities.GetEntitiesInSphere(ref sphere);
-            HashSet<long> seenGroups = new HashSet<long>();
-            for (int i = 0; i < entities.Count; i++)
-            {
-                IMyCubeGrid grid = entities[i] as IMyCubeGrid;
-                if (grid == null || grid.Closed) continue;
-                List<IMyCubeGrid> group = InsuranceRuntime.GetMechanicalGroup(grid);
-                if (group.Count == 0) continue;
-                IMyCubeGrid anchor = group[0];
-                if (!anchor.BigOwners.Contains(player.IdentityId) || !seenGroups.Add(anchor.EntityId) ||
-                    IsInsuredServiceGroup(group)) continue;
-                grids.Add(anchor);
-            }
-
-            grids.Sort(delegate(IMyCubeGrid left, IMyCubeGrid right)
-            {
-                string leftName = string.IsNullOrWhiteSpace(left.CustomName) ? left.DisplayName : left.CustomName;
-                string rightName = string.IsNullOrWhiteSpace(right.CustomName) ? right.DisplayName : right.CustomName;
-                return string.Compare(leftName, rightName, StringComparison.OrdinalIgnoreCase);
-            });
-            return grids;
-        }
-
-        private bool IsInsuredServiceGroup(List<IMyCubeGrid> group)
-        {
-            for (int policyIndex = 0; policyIndex < _servicePolicies.Count; policyIndex++)
-            {
-                long insuredGridId = _servicePolicies[policyIndex].SelectionGridId;
-                if (insuredGridId == 0) continue;
-                for (int gridIndex = 0; gridIndex < group.Count; gridIndex++)
-                    if (group[gridIndex].EntityId == insuredGridId) return true;
-            }
-
-            return false;
         }
 
         private bool CanUseSelectedGroup(IMyTerminalBlock block)
@@ -446,6 +406,8 @@ namespace ShipInsurance
             if (packet.Policies != null) _servicePolicies.AddRange(packet.Policies);
             _servicePolicies.Sort(delegate(PolicySummary left, PolicySummary right)
             {
+                int kind = (left.PolicyId == 0).CompareTo(right.PolicyId == 0);
+                if (kind != 0) return kind;
                 int name = string.Compare(left.GridName, right.GridName,
                     StringComparison.OrdinalIgnoreCase);
                 return name != 0 ? name : left.PolicyId.CompareTo(right.PolicyId);

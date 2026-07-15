@@ -56,17 +56,24 @@ namespace ShipInsurance
             if (_window != null) _window.Update();
         }
 
-        internal static void Open(IMyTerminalBlock terminal)
+        internal static void Open(IMyTerminalBlock terminal, Action closed = null)
         {
             InsuranceRichHud instance = Instance;
             if (instance == null || !instance._registered || instance._window == null)
             {
                 MyAPIGateway.Utilities.ShowNotification(
                     "Ship Insurance requires Rich HUD Master (Workshop 1965654081).", 5000);
+                if (closed != null) closed();
                 return;
             }
 
-            instance._window.Open(terminal);
+            instance._window.Open(terminal, closed);
+        }
+
+        internal static void Close()
+        {
+            InsuranceRichHud instance = Instance;
+            if (instance != null && instance._window != null) instance._window.Close();
         }
 
         private void OnHudReady()
@@ -81,6 +88,7 @@ namespace ShipInsurance
 
         private void OnHudReset()
         {
+            if (_window != null) _window.Close();
             _registered = false;
             _window = null;
             _scaleRoot = null;
@@ -125,6 +133,7 @@ namespace ShipInsurance
         private readonly BorderedButton _insureButton;
         private readonly BorderedButton _expediteButton;
         private IMyTerminalBlock _terminal;
+        private Action _closed;
         private bool _refreshing;
 
         internal InsuranceRichHudWindow(InsuranceTerminalControls terminalControls, HudParentBase parent)
@@ -189,16 +198,18 @@ namespace ShipInsurance
             UpdateButtonState();
         }
 
-        internal void Open(IMyTerminalBlock terminal)
+        internal void Open(IMyTerminalBlock terminal, Action closed)
         {
             if (!_terminalControls.CanOpenServiceTerminal(terminal))
             {
                 MyAPIGateway.Utilities.ShowNotification(
                     "Services Terminal must be functional, friendly, and within reach.", 4000);
+                if (closed != null) closed();
                 return;
             }
 
             _terminal = terminal;
+            _closed = closed;
             Visible = true;
             InputEnabled = true;
             GetWindowFocus();
@@ -208,10 +219,13 @@ namespace ShipInsurance
 
         internal void Close()
         {
+            Action closed = _closed;
+            _closed = null;
             Visible = false;
             InputEnabled = false;
             _terminal = null;
             HudMain.EnableCursor = false;
+            if (closed != null) closed();
         }
 
         internal void Update()

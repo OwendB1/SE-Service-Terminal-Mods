@@ -25,7 +25,9 @@ namespace ShipInsurance
         private readonly Dictionary<long, IMyCubeGrid> _subscribedGrids = new Dictionary<long, IMyCubeGrid>();
         private readonly Dictionary<long, Dictionary<Vector3I, DamageAttribution>> _lastDamage = new Dictionary<long, Dictionary<Vector3I, DamageAttribution>>();
         private readonly Dictionary<long, string> _identityNames = new Dictionary<long, string>();
-        private readonly Dictionary<MyDefinitionId, long> _blockValues = new Dictionary<MyDefinitionId, long>();
+        private readonly Dictionary<MyDefinitionId, long> _blockComponentValues = new Dictionary<MyDefinitionId, long>();
+        private readonly Dictionary<MyDefinitionId, long> _componentPrices =
+            new Dictionary<MyDefinitionId, long>();
         private readonly HashSet<long> _repairingGrids = new HashSet<long>();
 
         private InsuranceConfig _config = new InsuranceConfig();
@@ -81,7 +83,8 @@ namespace ShipInsurance
             _subscribedGrids.Clear();
             _lastDamage.Clear();
             _identityNames.Clear();
-            _blockValues.Clear();
+            _blockComponentValues.Clear();
+            _componentPrices.Clear();
             _repairingGrids.Clear();
             _sendResponse = null;
         }
@@ -108,14 +111,30 @@ namespace ShipInsurance
                 long remainingSeconds = InsuranceMath.RemainingSeconds(policy.RecoveryReadyUtcTicks, nowUtcTicks);
                 bool canExpedite = policy.RecoveryTerminalEntityId == serviceTerminalId &&
                                    remainingSeconds > 0 && !policy.RecoveryExpedited;
+                bool remote = policy.RecoveryReadyUtcTicks > 0 || selectionGridId == 0 ||
+                              !IsPolicyWithinServiceRange(policy, terminal);
+                ClaimQuote quote = BuildQuote(policy);
+                if (remote)
+                {
+                    quote.Recovery = true;
+                    quote.Cost = InsuranceMath.ClaimFee(quote.BaselineValue,
+                        _config.ClaimValueFraction, _config.MinimumClaimFee);
+                }
+
+                long transportCost = policy.RecoveryReadyUtcTicks > 0
+                    ? policy.RecoveryTransportFee
+                    : remote && terminal != null
+                        ? InsuranceMath.RemoteRecoveryFee(
+                            Vector3D.Distance(terminal.GetPosition(), policy.LastKnownPose.Position),
+                            _config.RemoteRecoveryFeePerKilometer)
+                        : 0;
                 policies.Add(new PolicySummary
                 {
                     PolicyId = policy.PolicyId,
                     GridName = policy.GridName,
                     SelectionGridId = selectionGridId,
                     TotalLoss = selectionGridId == 0,
-                    Remote = policy.RecoveryReadyUtcTicks > 0 || selectionGridId == 0 ||
-                             !IsPolicyWithinServiceRange(policy, terminal),
+                    Remote = remote,
                     RecoveryReadyUtcTicks = policy.RecoveryReadyUtcTicks,
                     RecoveryTerminalEntityId = policy.RecoveryTerminalEntityId,
                     RecoveryDistanceMeters = policy.RecoveryDistanceMeters,
@@ -125,11 +144,82 @@ namespace ShipInsurance
                         : 0,
                     ExpediteReductionPercent = (int)Math.Round(
                         (1.0 - InsuranceMath.Clamp01(_config.RemoteRecoveryExpediteFactor)) * 100.0),
-                    RecoveryExpedited = policy.RecoveryExpedited
+                    RecoveryExpedited = policy.RecoveryExpedited,
+                    ClaimCost = quote.Cost,
+                    Recovery = quote.Recovery,
+                    TransportCost = transportCost,
+                    LossRatio = quote.LossRatio
                 });
             }
 
+            AddEnrollmentSummaries(player, terminal, policies);
+
             return policies;
+        }
+
+        private void AddEnrollmentSummaries(IMyPlayer player, IMyFunctionalBlock terminal,
+            List<PolicySummary> summaries)
+        {
+            if (player == null || terminal == null) return;
+
+            BoundingSphereD sphere = new BoundingSphereD(terminal.GetPosition(),
+                ServiceGridDiscoveryRange);
+            List<IMyEntity> entities = MyAPIGateway.Entities.GetEntitiesInSphere(ref sphere);
+            HashSet<long> seenGroups = new HashSet<long>();
+            for (int i = 0; i < entities.Count; i++)
+            {
+                IMyCubeGrid grid = entities[i] as IMyCubeGrid;
+                if (grid == null || grid.Closed) continue;
+                List<IMyCubeGrid> group = GetMechanicalGroup(grid);
+                if (group.Count == 0) continue;
+                IMyCubeGrid anchor = group[0];
+                if (!seenGroups.Add(anchor.EntityId)) continue;
+
+                bool eligible = true;
+                long baselineValue = 0;
+                List<IMySlimBlock> blocks = new List<IMySlimBlock>();
+                for (int groupIndex = 0; groupIndex < group.Count; groupIndex++)
+                {
+                    IMyCubeGrid member = group[groupIndex];
+                    if ((_config.RequireGridOwner && !member.BigOwners.Contains(player.IdentityId)) ||
+                        FindPolicyByGrid(member.EntityId) != null)
+                    {
+                        eligible = false;
+                        break;
+                    }
+
+                    blocks.Clear();
+                    member.GetBlocks(blocks);
+                    if (blocks.Count == 0)
+                    {
+                        eligible = false;
+                        break;
+                    }
+                    for (int blockIndex = 0; blockIndex < blocks.Count; blockIndex++)
+                    {
+                        IMySlimBlock block = blocks[blockIndex];
+                        double integrity = block.MaxIntegrity <= 0f
+                            ? 0.0
+                            : block.Integrity / block.MaxIntegrity;
+                        baselineValue = InsuranceMath.Add(baselineValue,
+                            InsuranceMath.Scale(GetBlockComponentValue(block.BlockDefinition.Id),
+                                InsuranceMath.Clamp01(integrity)));
+                    }
+                }
+                if (!eligible) continue;
+
+                summaries.Add(new PolicySummary
+                {
+                    GridName = string.IsNullOrWhiteSpace(anchor.CustomName)
+                        ? anchor.DisplayName
+                        : anchor.CustomName,
+                    SelectionGridId = anchor.EntityId,
+                    EnrollmentCost = InsuranceMath.EnrollmentFee(baselineValue,
+                        _config.EnrollmentFlatFee, _config.EnrollmentValueFraction),
+                    DistanceMeters = Vector3D.Distance(terminal.GetPosition(),
+                        anchor.WorldAABB.Center)
+                });
+            }
         }
 
         internal bool TryValidateServiceTerminalRequest(IMyPlayer player, long terminalId, long targetGridId,
@@ -384,7 +474,7 @@ namespace ShipInsurance
             }
 
             LoadConfig();
-            _blockValues.Clear();
+            _blockComponentValues.Clear();
             SendResponse(steamId, "ShipInsuranceConfig.xml reloaded.");
         }
 
@@ -534,7 +624,7 @@ namespace ShipInsurance
                     return;
                 }
 
-                repairedLossValue = policy.BaselineValue;
+                repairedLossValue = quote.BaselineValue;
                 repairedBlocks = CountSnapshotBlocks(policy);
             }
             else
@@ -710,7 +800,7 @@ namespace ShipInsurance
             ClaimQuote quote = new ClaimQuote
             {
                 TotalLoss = !HasLivePolicyGrid(policy),
-                BaselineValue = Math.Max(0, policy.BaselineValue)
+                BaselineValue = CalculatePolicyBaselineValue(policy)
             };
 
             bool missingGrid = false;
@@ -725,7 +815,7 @@ namespace ShipInsurance
                 for (int i = 0; i < blueprint.CubeBlocks.Count; i++)
                 {
                     MyObjectBuilder_CubeBlock snapshot = blueprint.CubeBlocks[i];
-                    long fullValue = GetBlockValue(snapshot);
+                    long fullValue = GetBlockComponentValue(snapshot);
                     double targetRatio = InsuranceMath.Clamp01(snapshot.IntegrityPercent);
                     IMySlimBlock current = grid == null ? null : grid.GetCubeBlock(snapshot.Min);
 
@@ -1016,16 +1106,33 @@ namespace ShipInsurance
             for (int i = 0; i < blueprint.CubeBlocks.Count; i++)
             {
                 MyObjectBuilder_CubeBlock block = blueprint.CubeBlocks[i];
-                value = InsuranceMath.Add(value, InsuranceMath.Scale(GetBlockValue(block), InsuranceMath.Clamp01(block.IntegrityPercent)));
+                value = InsuranceMath.Add(value, InsuranceMath.Scale(GetBlockComponentValue(block), InsuranceMath.Clamp01(block.IntegrityPercent)));
             }
             return value;
         }
 
-        private long GetBlockValue(MyObjectBuilder_CubeBlock block)
+        private long CalculatePolicyBaselineValue(InsurancePolicy policy)
         {
-            MyDefinitionId id = block.GetId();
+            long value = 0;
+            if (policy == null || policy.Grids == null) return value;
+            for (int i = 0; i < policy.Grids.Count; i++)
+            {
+                MyObjectBuilder_CubeGrid blueprint = policy.Grids[i].Blueprint;
+                if (blueprint == null || blueprint.CubeBlocks == null) continue;
+                value = InsuranceMath.Add(value, CalculateBaselineValue(blueprint));
+            }
+            return value;
+        }
+
+        private long GetBlockComponentValue(MyObjectBuilder_CubeBlock block)
+        {
+            return GetBlockComponentValue(block.GetId());
+        }
+
+        private long GetBlockComponentValue(MyDefinitionId id)
+        {
             long cached;
-            if (_blockValues.TryGetValue(id, out cached)) return cached;
+            if (_blockComponentValues.TryGetValue(id, out cached)) return cached;
 
             long value = 0;
             MyCubeBlockDefinition definition;
@@ -1034,15 +1141,15 @@ namespace ShipInsurance
                 for (int i = 0; i < definition.Components.Length; i++)
                 {
                     MyCubeBlockDefinition.Component component = definition.Components[i];
-                    long unitValue = component.Definition == null || component.Definition.MinimalPricePerUnit <= 0
-                        ? Math.Max(0, _config.UnknownComponentValue)
-                        : component.Definition.MinimalPricePerUnit;
+                    long unitValue;
+                    if (component.Definition == null ||
+                        !_componentPrices.TryGetValue(component.Definition.Id, out unitValue))
+                        unitValue = Math.Max(0, _config.DefaultComponentPrice);
                     value = InsuranceMath.Add(value, InsuranceMath.Scale(unitValue, component.Count));
                 }
             }
 
-            if (value <= 0) value = Math.Max(0, _config.UnknownBlockValue);
-            _blockValues[id] = value;
+            _blockComponentValues[id] = value;
             return value;
         }
 
@@ -1400,7 +1507,9 @@ namespace ShipInsurance
         {
             try
             {
-                if (MyAPIGateway.Utilities.FileExistsInWorldStorage(ConfigFile, typeof(InsuranceSession)))
+                bool created = !MyAPIGateway.Utilities.FileExistsInWorldStorage(
+                    ConfigFile, typeof(InsuranceSession));
+                if (!created)
                 {
                     using (TextReader reader = MyAPIGateway.Utilities.ReadFileInWorldStorage(ConfigFile, typeof(InsuranceSession)))
                         _config = MyAPIGateway.Utilities.SerializeFromXML<InsuranceConfig>(reader.ReadToEnd()) ?? new InsuranceConfig();
@@ -1408,13 +1517,16 @@ namespace ShipInsurance
                 else
                 {
                     _config = new InsuranceConfig();
-                    SaveConfig();
                 }
                 ValidateConfig();
+                bool pricesChanged = RebuildComponentPrices();
+                if (created || pricesChanged) SaveConfig();
             }
             catch (Exception exception)
             {
                 _config = new InsuranceConfig();
+                ValidateConfig();
+                RebuildComponentPrices();
                 Log("Config load failed; defaults active", exception);
             }
         }
@@ -1426,8 +1538,7 @@ namespace ShipInsurance
             _config.ClaimValueFraction = Math.Max(0.0, _config.ClaimValueFraction);
             _config.MinimumLossRatio = InsuranceMath.Clamp01(_config.MinimumLossRatio);
             _config.MinimumClaimFee = Math.Max(0, _config.MinimumClaimFee);
-            _config.UnknownComponentValue = Math.Max(0, _config.UnknownComponentValue);
-            _config.UnknownBlockValue = Math.Max(0, _config.UnknownBlockValue);
+            _config.DefaultComponentPrice = Math.Max(0, _config.DefaultComponentPrice);
             _config.MaxPoliciesPerPlayer = Math.Max(1, _config.MaxPoliciesPerPlayer);
             _config.MaxIncidentLogEntries = Math.Max(1, _config.MaxIncidentLogEntries);
             _config.TotalLossExtraClearance = Math.Max(0.0, _config.TotalLossExtraClearance);
@@ -1444,6 +1555,78 @@ namespace ShipInsurance
                 _config.RemoteRecoveryExpediteCostPerSecond);
             _config.RemoteRecoveryExpediteFactor = InsuranceMath.Clamp01(
                 _config.RemoteRecoveryExpediteFactor);
+        }
+
+        private bool RebuildComponentPrices()
+        {
+            List<InsuranceComponentPrice> source = _config.ComponentPrices;
+            Dictionary<string, long> configured = new Dictionary<string, long>(
+                StringComparer.OrdinalIgnoreCase);
+            if (source != null)
+            {
+                for (int i = 0; i < source.Count; i++)
+                {
+                    InsuranceComponentPrice entry = source[i];
+                    if (entry == null || string.IsNullOrWhiteSpace(entry.SubtypeId)) continue;
+                    configured[entry.SubtypeId.Trim()] = Math.Max(0, entry.Price);
+                }
+            }
+
+            var definitions = MyDefinitionManager.Static.GetDefinitionsOfType<MyComponentDefinition>();
+            for (int i = 0; i < definitions.Count; i++)
+            {
+                MyComponentDefinition definition = definitions[i];
+                string subtype = definition.Id.SubtypeName;
+                if (!configured.ContainsKey(subtype))
+                    configured[subtype] = definition.MinimalPricePerUnit > 0
+                        ? definition.MinimalPricePerUnit
+                        : Math.Max(0, _config.DefaultComponentPrice);
+            }
+
+            List<InsuranceComponentPrice> normalized = new List<InsuranceComponentPrice>(
+                configured.Count);
+            foreach (KeyValuePair<string, long> pair in configured)
+            {
+                normalized.Add(new InsuranceComponentPrice
+                {
+                    SubtypeId = pair.Key,
+                    Price = pair.Value
+                });
+            }
+            normalized.Sort(delegate(InsuranceComponentPrice left,
+                InsuranceComponentPrice right)
+            {
+                return string.Compare(left.SubtypeId, right.SubtypeId,
+                    StringComparison.OrdinalIgnoreCase);
+            });
+
+            bool changed = source == null || source.Count != normalized.Count;
+            if (!changed)
+            {
+                for (int i = 0; i < normalized.Count; i++)
+                {
+                    InsuranceComponentPrice oldEntry = source[i];
+                    InsuranceComponentPrice newEntry = normalized[i];
+                    if (oldEntry == null || oldEntry.Price != newEntry.Price ||
+                        !string.Equals(oldEntry.SubtypeId, newEntry.SubtypeId,
+                            StringComparison.Ordinal))
+                    {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+            _config.ComponentPrices = normalized;
+
+            _componentPrices.Clear();
+            for (int i = 0; i < definitions.Count; i++)
+            {
+                long price;
+                if (configured.TryGetValue(definitions[i].Id.SubtypeName, out price))
+                    _componentPrices[definitions[i].Id] = price;
+            }
+            _blockComponentValues.Clear();
+            return changed;
         }
 
         private void SaveConfig()

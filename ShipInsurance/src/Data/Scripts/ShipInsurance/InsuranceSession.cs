@@ -10,12 +10,7 @@ namespace ShipInsurance
         private InsuranceCommands _commands;
         private InsuranceTerminalControls _terminalControls;
         private InsuranceRichHud _richHud;
-        private readonly InsuranceTerminalModel _terminalModel = new InsuranceTerminalModel();
-
-        public override void LoadData()
-        {
-            _terminalModel.Apply(ModContext.ModPath);
-        }
+        private ServiceTerminalFrameworkClient _frameworkClient;
 
         public override void BeforeStart()
         {
@@ -34,10 +29,13 @@ namespace ShipInsurance
                 _terminalControls.Register();
                 _richHud = new InsuranceRichHud(_terminalControls);
                 _richHud.Start();
+                _frameworkClient = new ServiceTerminalFrameworkClient();
+                _frameworkClient.Start();
             }
 
             InsuranceRuntime.Log("Initialized (server=" + isServer + ", terminalControls=" +
-                (_terminalControls != null) + ", richHud=" + (_richHud != null) + ")");
+                (_terminalControls != null) + ", richHud=" + (_richHud != null) +
+                ", frameworkClient=" + (_frameworkClient != null) + ")");
         }
 
         public override void UpdateAfterSimulation()
@@ -53,15 +51,16 @@ namespace ShipInsurance
 
         protected override void UnloadData()
         {
+            if (_frameworkClient != null) _frameworkClient.Stop();
             if (_richHud != null) _richHud.Stop();
             if (_terminalControls != null) _terminalControls.Stop();
             if (_commands != null) _commands.Stop();
             if (_runtime != null) _runtime.Stop();
             _terminalControls = null;
             _richHud = null;
+            _frameworkClient = null;
             _commands = null;
             _runtime = null;
-            _terminalModel.Restore();
             base.UnloadData();
         }
     }
