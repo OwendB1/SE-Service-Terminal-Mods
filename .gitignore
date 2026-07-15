@@ -20,3 +20,5 @@ Directory.Build.user.props
 # Logs/temp
 *.log
 *.tmp
+
+graphify-out/cache/
