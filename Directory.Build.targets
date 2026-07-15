@@ -1,0 +1,44 @@
+<Project>
+  <ItemGroup Condition="Exists('$(SpaceEngineersBinDir)')">
+    <Reference Include="VRage.Library">
+      <HintPath>$(SpaceEngineersBinDir)/VRage.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>$(SpaceEngineersBinDir)/VRage.Math.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>$(SpaceEngineersBinDir)/VRage.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Common">
+      <HintPath>$(SpaceEngineersBinDir)/Sandbox.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Game">
+      <HintPath>$(SpaceEngineersBinDir)/Sandbox.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Graphics">
+      <HintPath>$(SpaceEngineersBinDir)/Sandbox.Graphics.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders">
+      <HintPath>$(SpaceEngineersBinDir)/SpaceEngineers.ObjectBuilders.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>$(SpaceEngineersBinDir)/SpaceEngineers.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ParallelTasks">
+      <HintPath>$(SpaceEngineersBinDir)/ParallelTasks.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ProtoBuf">
+      <HintPath>$(SpaceEngineersBinDir)/ProtoBuf.Net.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

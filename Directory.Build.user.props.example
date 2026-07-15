@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <SpaceEngineersDir>/path/to/SpaceEngineers</SpaceEngineersDir>
+  </PropertyGroup>
+</Project>

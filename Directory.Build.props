@@ -1,0 +1,11 @@
+<Project>
+  <Import Project="Directory.Build.user.props" Condition="Exists('Directory.Build.user.props')" />
+
+  <PropertyGroup>
+    <!-- Override with SE_DIR, SE_GAME_ROOT, or local Directory.Build.user.props. -->
+    <SpaceEngineersDir Condition="'$(SpaceEngineersDir)' == '' and '$(SE_DIR)' != ''">$(SE_DIR)</SpaceEngineersDir>
+    <SpaceEngineersDir Condition="'$(SpaceEngineersDir)' == '' and '$(SE_GAME_ROOT)' != ''">$(SE_GAME_ROOT)</SpaceEngineersDir>
+    <SpaceEngineersDir Condition="'$(SpaceEngineersDir)' == ''">C:/Program Files (x86)/Steam/steamapps/common/SpaceEngineers</SpaceEngineersDir>
+    <SpaceEngineersBinDir Condition="'$(SpaceEngineersBinDir)' == ''">$(SpaceEngineersDir)/Bin64</SpaceEngineersBinDir>
+  </PropertyGroup>
+</Project>

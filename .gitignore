@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# IDE/user files
+.vs/
+.idea/
+*.suo
+*.user
+*.rsuser
+*.DotSettings.user
+
+# Local Space Engineers paths
+GameBinaries/
+Directory.Build.user.props
+*.mdk.local.ini
+
+# Logs/temp
+*.log
+*.tmp
