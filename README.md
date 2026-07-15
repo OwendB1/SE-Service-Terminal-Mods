@@ -73,7 +73,7 @@ One policy follows the mechanically linked group captured at enrollment. Later a
 - `ShipInsurance.sln` - Visual Studio solution containing one mod project.
 - `ShipInsurance/ShipInsurance.csproj` - .NET Framework 4.8, C# 6, x64 MDK2 project.
 - `ShipInsurance/src` - Space Engineers mod payload uploaded to Steam Workshop.
-- `ShipInsurance/src/Data/Scripts/ShipInsurance` - insurance session, persistence, pricing, and network code.
+- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, command transport, runtime mechanics, terminal controls, persistence, and pricing classes.
 - `.github/workflows/steam-workshop-upload.yml` - production-branch and manual Steam upload pipeline.
 
 ## Local setup

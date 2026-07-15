@@ -11,10 +11,9 @@ using VRageMath;
 
 namespace ShipInsurance
 {
-    public sealed partial class InsuranceSession
+    internal sealed class InsuranceTerminalControls
     {
-        private const double ServiceGridDiscoveryRange = 250.0;
-        private const double ServiceTerminalUseDistance = 15.0;
+        private readonly InsuranceCommands _commands;
         private readonly List<IMyTerminalControl> _serviceTerminalControls = new List<IMyTerminalControl>();
         private readonly List<PolicySummary> _servicePolicies = new List<PolicySummary>();
         private readonly Dictionary<long, long> _serviceChoicePolicies = new Dictionary<long, long>();
@@ -28,7 +27,13 @@ namespace ShipInsurance
         private IMyTerminalControlButton _serviceExpediteButton;
         private bool _serviceTerminalControlsRegistered;
 
-        private void RegisterServiceTerminalControls()
+        internal InsuranceTerminalControls(InsuranceCommands commands)
+        {
+            _commands = commands;
+            _commands.PolicyListReceived += ApplyServicePolicyList;
+        }
+
+        internal void Register()
         {
             if (_serviceTerminalControlsRegistered || MyAPIGateway.TerminalControls == null) return;
 
@@ -108,7 +113,7 @@ namespace ShipInsurance
         private void AddServiceTerminalControl(IMyTerminalControl control)
         {
             control.SupportsMultipleBlocks = false;
-            control.Visible = IsServicesTerminal;
+            control.Visible = InsuranceRuntime.IsServicesTerminal;
             MyAPIGateway.TerminalControls.AddControl<IMyFunctionalBlock>(control);
             _serviceTerminalControls.Add(control);
         }
@@ -126,8 +131,9 @@ namespace ShipInsurance
             return button;
         }
 
-        private void UnregisterServiceTerminalControls()
+        internal void Stop()
         {
+            _commands.PolicyListReceived -= ApplyServicePolicyList;
             if (!_serviceTerminalControlsRegistered || MyAPIGateway.TerminalControls == null) return;
 
             for (int i = 0; i < _serviceTerminalControls.Count; i++)
@@ -179,7 +185,7 @@ namespace ShipInsurance
                 long remaining = InsuranceMath.RemainingSeconds(policy.RecoveryReadyUtcTicks,
                     DateTime.UtcNow.Ticks);
                 string state = policy.RecoveryReadyUtcTicks > 0
-                    ? remaining > 0 ? "recovery " + Duration(remaining) : "recovery ready"
+                    ? remaining > 0 ? "recovery " + InsuranceRuntime.Duration(remaining) : "recovery ready"
                     : policy.TotalLoss ? "total loss" : policy.Remote ? "remote recovery" : "active";
                 items.Add(new MyTerminalControlComboBoxItem
                 {
@@ -191,7 +197,7 @@ namespace ShipInsurance
 
             List<IMyCubeGrid> grids = FindNearbyOwnedGrids();
             IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
-            IMyFunctionalBlock terminal = FindServiceTerminal(_servicePolicyTerminalId);
+            IMyFunctionalBlock terminal = InsuranceRuntime.FindServiceTerminal(_servicePolicyTerminalId);
             Vector3D servicePosition = terminal != null
                 ? terminal.GetPosition()
                 : player == null ? Vector3D.Zero : player.GetPosition();
@@ -234,16 +240,17 @@ namespace ShipInsurance
             IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
             if (player == null) return grids;
 
-            IMyFunctionalBlock terminal = FindServiceTerminal(_servicePolicyTerminalId);
+            IMyFunctionalBlock terminal = InsuranceRuntime.FindServiceTerminal(_servicePolicyTerminalId);
             Vector3D center = terminal == null ? player.GetPosition() : terminal.GetPosition();
-            BoundingSphereD sphere = new BoundingSphereD(center, ServiceGridDiscoveryRange);
+            BoundingSphereD sphere = new BoundingSphereD(center,
+                InsuranceRuntime.ServiceGridDiscoveryRange);
             List<IMyEntity> entities = MyAPIGateway.Entities.GetEntitiesInSphere(ref sphere);
             HashSet<long> seenGroups = new HashSet<long>();
             for (int i = 0; i < entities.Count; i++)
             {
                 IMyCubeGrid grid = entities[i] as IMyCubeGrid;
                 if (grid == null || grid.Closed) continue;
-                List<IMyCubeGrid> group = GetMechanicalGroup(grid);
+                List<IMyCubeGrid> group = InsuranceRuntime.GetMechanicalGroup(grid);
                 if (group.Count == 0) continue;
                 IMyCubeGrid anchor = group[0];
                 if (!anchor.BigOwners.Contains(player.IdentityId) || !seenGroups.Add(anchor.EntityId) ||
@@ -312,7 +319,8 @@ namespace ShipInsurance
                 !policy.RecoveryExpedited && policy.ExpediteReductionPercent > 0)
             {
                 _serviceExpediteButton.Tooltip = MyStringId.GetOrCompute("Pay " +
-                    Money(policy.ExpeditePrice) + " SC to reduce current remaining time by " +
+                    InsuranceRuntime.Money(policy.ExpeditePrice) +
+                    " SC to reduce current remaining time by " +
                     policy.ExpediteReductionPercent + "% (one use per recovery).");
             }
             else
@@ -326,11 +334,12 @@ namespace ShipInsurance
         {
             IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
             IMyFunctionalBlock functional = block as IMyFunctionalBlock;
-            if (player == null || functional == null || !IsServicesTerminal(block) ||
+            if (player == null || functional == null || !InsuranceRuntime.IsServicesTerminal(block) ||
                 !functional.IsFunctional || !functional.Enabled) return false;
             if (block.GetUserRelationToOwner(player.IdentityId) == MyRelationsBetweenPlayerAndBlock.Enemies) return false;
             if (Vector3D.DistanceSquared(player.GetPosition(), block.GetPosition()) >
-                ServiceTerminalUseDistance * ServiceTerminalUseDistance) return false;
+                InsuranceRuntime.ServiceTerminalUseDistance *
+                InsuranceRuntime.ServiceTerminalUseDistance) return false;
             return true;
         }
 
@@ -355,24 +364,16 @@ namespace ShipInsurance
 
             _servicePolicyTerminalId = terminal.EntityId;
             _lastServicePolicyRequestTicks = now;
-            NetworkPacket packet = new NetworkPacket
-            {
-                Kind = PolicyListRequestPacket,
-                ServiceTerminalId = terminal.EntityId
-            };
 
             try
             {
-                if (_isServer)
-                    HandlePolicyListRequest(MyAPIGateway.Multiplayer.MyId, terminal.EntityId);
-                else
-                    MyAPIGateway.Multiplayer.SendMessageToServer(NetworkChannel,
-                        MyAPIGateway.Utilities.SerializeToBinary(packet), true);
+                _commands.RequestPolicyList(terminal.EntityId);
             }
             catch (Exception exception)
             {
-                ShowClientText("Insurance target refresh failed: " + exception.Message);
-                Log("Insurance target refresh failed", exception);
+                InsuranceCommands.ShowClientText("Insurance target refresh failed: " +
+                    exception.Message);
+                InsuranceCommands.Log("Insurance target refresh failed", exception);
             }
         }
 
@@ -408,36 +409,24 @@ namespace ShipInsurance
             long gridId = insuring ? _selectedServiceGridId : 0;
             if (insuring && gridId == 0)
             {
-                ShowClientText("Select a 'New policy' mechanical group first.");
+                InsuranceCommands.ShowClientText("Select a 'New policy' mechanical group first.");
                 return;
             }
 
             if (!insuring && policyId == 0)
             {
-                ShowClientText("Select an existing policy first.");
+                InsuranceCommands.ShowClientText("Select an existing policy first.");
                 return;
             }
 
-            NetworkPacket packet = new NetworkPacket
-            {
-                Kind = CommandPacket,
-                Command = policyId > 0 ? command + " " + policyId.ToString(CultureInfo.InvariantCulture) : command,
-                ControlledGridId = gridId,
-                ServiceTerminalId = terminal.EntityId
-            };
-
             try
             {
-                if (_isServer)
-                    HandleCommand(MyAPIGateway.Multiplayer.MyId, packet);
-                else
-                    MyAPIGateway.Multiplayer.SendMessageToServer(NetworkChannel,
-                        MyAPIGateway.Utilities.SerializeToBinary(packet), true);
+                _commands.ExecuteTerminalCommand(command, policyId, gridId, terminal.EntityId);
             }
             catch (Exception exception)
             {
-                ShowClientText("Service terminal action failed: " + exception.Message);
-                Log("Service terminal action failed", exception);
+                InsuranceCommands.ShowClientText("Service terminal action failed: " + exception.Message);
+                InsuranceCommands.Log("Service terminal action failed", exception);
             }
         }
     }
