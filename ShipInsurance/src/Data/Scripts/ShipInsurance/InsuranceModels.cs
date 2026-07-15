@@ -10,6 +10,7 @@ namespace ShipInsurance
     {
         public long EnrollmentFlatFee = 0;
         public double EnrollmentValueFraction = 0.50;
+        public double CancellationRefundFraction = 0.50;
         public double ClaimValueFraction = 1.00;
         public double MinimumLossRatio = 0.25;
         public long MinimumClaimFee = 0;
@@ -27,6 +28,14 @@ namespace ShipInsurance
         public int RemoteRecoveryMaximumSeconds = 3600;
         public long RemoteRecoveryExpediteCostPerSecond = 1000;
         public double RemoteRecoveryExpediteFactor = 0.5;
+        public bool UseEconomyFactionPricing = false;
+        public bool UseDynamicRecoveryPricing = false;
+        public int EconomyFriendlyReputationMin = 500;
+        public int EconomyFriendlyReputationMax = 1500;
+        public double EconomyMaximumFactionDiscount = 0.10;
+        public long InsuranceCooldownCreditsPerSecond = 1000;
+        public int InsuranceCooldownMinimumSeconds = 60;
+        public int InsuranceCooldownMaximumSeconds = 86400;
         [XmlArrayItem("Component")]
         public List<InsuranceComponentPrice> ComponentPrices =
             new List<InsuranceComponentPrice>();
@@ -43,6 +52,7 @@ namespace ShipInsurance
     {
         [ProtoMember(1)] public long NextPolicyId = 1;
         [ProtoMember(2)] public List<InsurancePolicy> Policies = new List<InsurancePolicy>();
+        [ProtoMember(3)] public List<InsuranceCooldown> Cooldowns = new List<InsuranceCooldown>();
     }
 
     [ProtoContract]
@@ -66,6 +76,22 @@ namespace ShipInsurance
         [ProtoMember(16)] public double RecoveryDistanceMeters;
         [ProtoMember(17)] public long RecoveryTransportFee;
         [ProtoMember(18)] public bool RecoveryExpedited;
+        [ProtoMember(19)] public long RecoveryClaimCost;
+        [ProtoMember(20)] public bool RecoveryClaimCostLocked;
+        [ProtoMember(21)] public bool RecoveryDynamicPrice;
+        [ProtoMember(22)] public string RecoveryPricingFactionTag;
+        [ProtoMember(23)] public int RecoveryPricingReputation;
+        [ProtoMember(24)] public double RecoveryPricingDiscount;
+        [ProtoMember(25)] public bool Consumed;
+        [ProtoMember(26)] public long EnrollmentCost;
+    }
+
+    [ProtoContract]
+    public sealed class InsuranceCooldown
+    {
+        [ProtoMember(1)] public long OwnerIdentityId;
+        [ProtoMember(2)] public long ReadyUtcTicks;
+        [ProtoMember(3)] public long ServiceCost;
     }
 
     [ProtoContract]
@@ -123,6 +149,12 @@ namespace ShipInsurance
         [ProtoMember(15)] public long EnrollmentCost;
         [ProtoMember(16)] public double DistanceMeters;
         [ProtoMember(17)] public double LossRatio;
+        [ProtoMember(18)] public string FactionTag;
+        [ProtoMember(19)] public int FactionReputation;
+        [ProtoMember(20)] public int FactionDiscountPercent;
+        [ProtoMember(21)] public bool DynamicRecoveryPrice;
+        [ProtoMember(22)] public bool RecoveryPriceLocked;
+        [ProtoMember(23)] public long InsuranceCooldownReadyUtcTicks;
     }
 
     internal sealed class ClaimQuote
@@ -131,7 +163,13 @@ namespace ShipInsurance
         public bool Recovery;
         public long BaselineValue;
         public long LossValue;
+        public long RecoveryValue;
         public long Cost;
+        public string FactionTag;
+        public int FactionReputation;
+        public double FactionDiscount;
+        public bool DynamicRecoveryPrice;
+        public bool RecoveryPriceLocked;
         public int MissingBlocks;
         public int DamagedBlocks;
         public int ConflictingBlocks;

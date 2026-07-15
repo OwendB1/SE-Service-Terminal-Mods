@@ -51,11 +51,6 @@ namespace ShipInsurance
             if (Instance == this) Instance = null;
         }
 
-        internal void Update()
-        {
-            if (_window != null) _window.Update();
-        }
-
         internal static void Open(IMyTerminalBlock terminal, Action closed = null)
         {
             InsuranceRichHud instance = Instance;
@@ -189,11 +184,9 @@ namespace ShipInsurance
             _expediteButton = AddPolicyButton("Expedite recovery", "expedite");
             BorderedButton history = AddPolicyButton("Damage history", "history");
             BorderedButton cancel = AddPolicyButton("Cancel policy", "cancel");
-            BorderedButton close = CreateButton(body, "Close", delegate { Close(); });
-            PositionButton(_expediteButton, -519f, 12f, 330f);
-            PositionButton(history, -173f, 12f, 330f);
-            PositionButton(cancel, 173f, 12f, 330f);
-            PositionButton(close, 519f, 12f, 330f);
+            PositionButton(_expediteButton, -456f, 12f, 440f);
+            PositionButton(history, 0f, 12f, 440f);
+            PositionButton(cancel, 456f, 12f, 440f);
 
             UpdateButtonState();
         }
@@ -226,11 +219,6 @@ namespace ShipInsurance
             _terminal = null;
             HudMain.EnableCursor = false;
             if (closed != null) closed();
-        }
-
-        internal void Update()
-        {
-            if (Visible && SharedBinds.Escape.IsNewPressed) Close();
         }
 
         internal void Refresh(bool force)

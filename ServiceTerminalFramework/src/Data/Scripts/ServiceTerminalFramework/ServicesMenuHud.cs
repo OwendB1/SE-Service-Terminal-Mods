@@ -53,13 +53,14 @@ namespace ServiceTerminalFramework
             if (_sidebar != null) _sidebar.Update();
         }
 
-        internal static bool Show(IMyTerminalBlock terminal, IMyEntity user)
+        internal static bool Show(IMyTerminalBlock terminal, IMyEntity user,
+            Action openVanilla)
         {
             ServicesMenuHud instance = Instance;
             if (instance == null || !instance._registered || instance._sidebar == null)
                 return false;
 
-            instance._sidebar.Show(terminal, user);
+            instance._sidebar.Show(terminal, user, openVanilla);
             return true;
         }
 
@@ -107,6 +108,10 @@ namespace ServiceTerminalFramework
 
     internal sealed class ServicesSidebar : HudElementBase
     {
+        private const float InitialMenuWidth = 460f;
+        private const float InitialMenuHeaderHeight = 52f;
+        private const float InitialMenuButtonHeight = 54f;
+        private const float InitialMenuButtonGap = 10f;
         private const float ExpandedWidth = 210f;
         private const float FoldedWidth = 52f;
         private const float EdgeGap = 12f;
@@ -120,6 +125,7 @@ namespace ServiceTerminalFramework
         private IMyTerminalBlock _terminal;
         private IMyEntity _user;
         private ServiceEntry _activeEntry;
+        private Action _openVanilla;
         private int? _previousHudState;
         private bool _automaticallyFolded;
         private bool _drawerOpen;
@@ -131,7 +137,6 @@ namespace ServiceTerminalFramework
         {
             _api = api;
             _api.Changed += OnServicesChanged;
-            MyAPIGateway.Gui.GuiControlRemoved += OnGuiControlRemoved;
             ParentAlignment = ParentAlignments.Center;
             ZOffset = 20;
 
@@ -151,13 +156,14 @@ namespace ServiceTerminalFramework
             InputEnabled = false;
         }
 
-        internal void Show(IMyTerminalBlock terminal, IMyEntity user)
+        internal void Show(IMyTerminalBlock terminal, IMyEntity user, Action openVanilla)
         {
             if (_activeEntry != null && (_terminal != terminal || _user != user))
                 DeactivateCurrent();
 
             _terminal = terminal;
             _user = user;
+            _openVanilla = openVanilla;
             _drawerOpen = false;
             _lastScreenWidth = -1f;
             _lastScreenHeight = -1f;
@@ -182,7 +188,6 @@ namespace ServiceTerminalFramework
         internal void Dispose()
         {
             _api.Changed -= OnServicesChanged;
-            MyAPIGateway.Gui.GuiControlRemoved -= OnGuiControlRemoved;
             Hide();
             ClearContent();
         }
@@ -194,6 +199,7 @@ namespace ServiceTerminalFramework
             InputEnabled = false;
             _terminal = null;
             _user = null;
+            _openVanilla = null;
             _drawerOpen = false;
             HudMain.EnableCursor = false;
         }
@@ -227,15 +233,21 @@ namespace ServiceTerminalFramework
         {
             ClearContent();
             List<ServiceEntry> entries = _api.GetEntries();
-            bool folded = _automaticallyFolded && !_drawerOpen;
-            float width = folded ? FoldedWidth : ExpandedWidth;
-            int optionCount = entries.Count + 1;
+            bool initialMenu = _activeEntry == null;
+            bool folded = !initialMenu && _automaticallyFolded && !_drawerOpen;
+            float width = initialMenu ? InitialMenuWidth : folded ? FoldedWidth : ExpandedWidth;
+            float headerHeight = initialMenu ? InitialMenuHeaderHeight : HeaderHeight;
+            float buttonHeight = initialMenu ? InitialMenuButtonHeight : ButtonHeight;
+            float buttonGap = initialMenu ? InitialMenuButtonGap : ButtonGap;
+            int optionCount = entries.Count + 2;
             float height = folded
                 ? FoldedWidth
-                : HeaderHeight + 16f + optionCount * ButtonHeight +
-                    Math.Max(0, optionCount - 1) * ButtonGap;
+                : headerHeight + 16f + optionCount * buttonHeight +
+                    Math.Max(0, optionCount - 1) * buttonGap;
             Size = new Vector2(width, height);
-            float x = _automaticallyFolded
+            float x = initialMenu
+                ? 0f
+                : _automaticallyFolded
                 ? _designScreenWidth * .5f - EdgeGap - width * .5f
                 : 1463.62f * .5f + EdgeGap + width * .5f;
             Offset = new Vector2(x, 0f);
@@ -248,16 +260,17 @@ namespace ServiceTerminalFramework
 
             Label title = new Label(this)
             {
-                Text = "SERVICES",
+                Text = initialMenu ? "SELECT A SERVICE" : "SERVICES",
                 AutoResize = false,
-                Size = new Vector2(width - 20f, HeaderHeight),
+                Size = new Vector2(width - 20f, headerHeight),
                 ParentAlignment = ParentAlignments.InnerTopLeft,
                 Offset = new Vector2(10f, -8f),
-                Format = TerminalFormatting.HeaderFormat.WithAlignment(TextAlignment.Left)
+                Format = TerminalFormatting.HeaderFormat.WithAlignment(
+                    initialMenu ? TextAlignment.Center : TextAlignment.Left)
             };
             _content.Add(title);
 
-            if (_automaticallyFolded)
+            if (!initialMenu && _automaticallyFolded)
             {
                 BorderedButton fold = AddButton(">", ToggleDrawer,
                     width * .5f - 25f, 38f, 30f);
@@ -265,18 +278,22 @@ namespace ServiceTerminalFramework
                 fold.Offset = new Vector2(-6f, -7f);
             }
 
-            float firstY = -HeaderHeight - 8f;
-            BorderedButton vanilla = AddButton("Vanilla services", ActivateVanilla,
-                firstY, width - 16f, ButtonHeight);
-            SetSelected(vanilla, _activeEntry == null);
+            float firstY = -headerHeight - 8f;
+            float buttonWidth = width - (initialMenu ? 32f : 16f);
+            AddButton("Vanilla services", ActivateVanilla,
+                firstY, buttonWidth, buttonHeight);
             for (int i = 0; i < entries.Count; i++)
             {
                 ServiceEntry entry = entries[i];
-                float y = firstY - (i + 1) * (ButtonHeight + ButtonGap);
+                float y = firstY - (i + 1) * (buttonHeight + buttonGap);
                 BorderedButton service = AddButton(entry.Name,
-                    delegate { Activate(entry); }, y, width - 16f, ButtonHeight);
+                    delegate { Activate(entry); }, y, buttonWidth, buttonHeight);
                 SetSelected(service, _activeEntry != null && _activeEntry.Id == entry.Id);
             }
+
+            AddButton("Close", Hide,
+                firstY - (entries.Count + 1) * (buttonHeight + buttonGap),
+                buttonWidth, buttonHeight);
         }
 
         private BorderedButton AddButton(string text, Action action, float y,
@@ -310,10 +327,9 @@ namespace ServiceTerminalFramework
 
         private void ActivateVanilla()
         {
-            DeactivateCurrent();
-            if (_automaticallyFolded) _drawerOpen = false;
-            Rebuild();
-            HudMain.EnableCursor = true;
+            Action openVanilla = _openVanilla;
+            Hide();
+            if (openVanilla != null) openVanilla();
         }
 
         private void Activate(ServiceEntry entry)
@@ -407,13 +423,6 @@ namespace ServiceTerminalFramework
             }
 
             Rebuild();
-        }
-
-        private void OnGuiControlRemoved(object control)
-        {
-            if (Visible && control != null && string.Equals(control.GetType().Name,
-                "MyGuiScreenServicesTerminal", StringComparison.Ordinal))
-                Hide();
         }
 
         private void ClearContent()

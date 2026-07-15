@@ -41,7 +41,6 @@ namespace ShipInsurance
         public override void UpdateAfterSimulation()
         {
             if (_runtime != null) _runtime.Update();
-            if (_richHud != null) _richHud.Update();
         }
 
         public override void SaveData()

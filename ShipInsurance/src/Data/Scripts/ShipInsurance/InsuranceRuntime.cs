@@ -8,6 +8,7 @@ using Sandbox.ModAPI;
 using VRage;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using VRage.Game.ObjectBuilders.Definitions;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Utils;
@@ -37,6 +38,16 @@ namespace ShipInsurance
         private bool _isServer;
         private bool _dirty;
         private int _frame;
+
+        private sealed class EconomyPricingContext
+        {
+            public string FactionTag;
+            public int Reputation;
+            public double Discount;
+            public bool DynamicRecoveryPrice;
+            public readonly Dictionary<MyDefinitionId, long> ComponentPrices =
+                new Dictionary<MyDefinitionId, long>();
+        }
 
         internal void Start(bool isServer, Action<ulong, string> sendResponse)
         {
@@ -92,6 +103,9 @@ namespace ShipInsurance
         internal List<PolicySummary> BuildPolicySummaries(IMyPlayer player, long serviceTerminalId)
         {
             IMyFunctionalBlock terminal = FindServiceTerminal(serviceTerminalId);
+            EconomyPricingContext pricing = BuildEconomyPricingContext(player, terminal);
+            long cooldownReadyUtcTicks = GetInsuranceCooldownReadyUtcTicks(
+                player.IdentityId, DateTime.UtcNow.Ticks);
             List<PolicySummary> policies = new List<PolicySummary>();
 
             for (int i = 0; i < _state.Policies.Count; i++)
@@ -113,12 +127,11 @@ namespace ShipInsurance
                                    remainingSeconds > 0 && !policy.RecoveryExpedited;
                 bool remote = policy.RecoveryReadyUtcTicks > 0 || selectionGridId == 0 ||
                               !IsPolicyWithinServiceRange(policy, terminal);
-                ClaimQuote quote = BuildQuote(policy);
+                ClaimQuote quote = BuildQuote(policy, pricing);
                 if (remote)
                 {
                     quote.Recovery = true;
-                    quote.Cost = InsuranceMath.ClaimFee(quote.BaselineValue,
-                        _config.ClaimValueFraction, _config.MinimumClaimFee);
+                    ApplyRecoveryPricing(policy, quote, pricing);
                 }
 
                 long transportCost = policy.RecoveryReadyUtcTicks > 0
@@ -148,17 +161,25 @@ namespace ShipInsurance
                     ClaimCost = quote.Cost,
                     Recovery = quote.Recovery,
                     TransportCost = transportCost,
-                    LossRatio = quote.LossRatio
+                    LossRatio = quote.LossRatio,
+                    FactionTag = quote.FactionTag,
+                    FactionReputation = quote.FactionReputation,
+                    FactionDiscountPercent = (int)Math.Round(quote.FactionDiscount * 100.0),
+                    DynamicRecoveryPrice = quote.DynamicRecoveryPrice,
+                    RecoveryPriceLocked = quote.RecoveryPriceLocked,
+                    InsuranceCooldownReadyUtcTicks = HasRecoveryOrder(policy)
+                        ? 0
+                        : cooldownReadyUtcTicks
                 });
             }
 
-            AddEnrollmentSummaries(player, terminal, policies);
+            AddEnrollmentSummaries(player, terminal, pricing, policies);
 
             return policies;
         }
 
         private void AddEnrollmentSummaries(IMyPlayer player, IMyFunctionalBlock terminal,
-            List<PolicySummary> summaries)
+            EconomyPricingContext pricing, List<PolicySummary> summaries)
         {
             if (player == null || terminal == null) return;
 
@@ -215,9 +236,13 @@ namespace ShipInsurance
                         : anchor.CustomName,
                     SelectionGridId = anchor.EntityId,
                     EnrollmentCost = InsuranceMath.EnrollmentFee(baselineValue,
-                        _config.EnrollmentFlatFee, _config.EnrollmentValueFraction),
+                        _config.EnrollmentFlatFee, _config.EnrollmentValueFraction,
+                        pricing.Discount),
                     DistanceMeters = Vector3D.Distance(terminal.GetPosition(),
-                        anchor.WorldAABB.Center)
+                        anchor.WorldAABB.Center),
+                    FactionTag = pricing.FactionTag,
+                    FactionReputation = pricing.Reputation,
+                    FactionDiscountPercent = (int)Math.Round(pricing.Discount * 100.0)
                 });
             }
         }
@@ -280,7 +305,8 @@ namespace ShipInsurance
             return true;
         }
 
-        internal void InsureGrid(IMyPlayer player, ulong steamId, long clientGridId, IMyCubeGrid serviceGrid)
+        internal void InsureGrid(IMyPlayer player, ulong steamId, long clientGridId,
+            IMyCubeGrid serviceGrid, long serviceTerminalId)
         {
             IMyCubeGrid grid = serviceGrid;
             if (grid == null || grid.EntityId != clientGridId)
@@ -344,7 +370,10 @@ namespace ShipInsurance
                     member.WorldAABB.HalfExtents.Length() + _config.TotalLossExtraClearance);
             }
 
-            long fee = InsuranceMath.EnrollmentFee(baselineValue, _config.EnrollmentFlatFee, _config.EnrollmentValueFraction);
+            EconomyPricingContext pricing = BuildEconomyPricingContext(player,
+                FindServiceTerminal(serviceTerminalId));
+            long fee = InsuranceMath.EnrollmentFee(baselineValue, _config.EnrollmentFlatFee,
+                _config.EnrollmentValueFraction, pricing.Discount);
             long balance;
             if (!player.TryGetBalanceInfo(out balance) || balance < fee)
             {
@@ -363,6 +392,7 @@ namespace ShipInsurance
                 GridName = string.IsNullOrWhiteSpace(anchor.CustomName) ? anchor.DisplayName : anchor.CustomName,
                 CreatedUtcTicks = DateTime.UtcNow.Ticks,
                 BaselineValue = baselineValue,
+                EnrollmentCost = fee,
                 LastKnownPose = new MyPositionAndOrientation(anchor.WorldMatrix),
                 ClearanceRadius = clearanceRadius,
                 Grids = snapshots
@@ -383,7 +413,9 @@ namespace ShipInsurance
             SendResponse(steamId, "Policy #" + policy.PolicyId + " created for " + policy.GridName +
                 ". Snapshot " + group.Count + " mechanically linked grids / " + blockCount +
                 " blocks, value " + Money(baselineValue) +
-                " SC, enrollment " + Money(fee) + " SC.");
+                " SC, enrollment " + Money(fee) + " SC" +
+                FormatEconomyPricing(pricing.FactionTag, pricing.Reputation,
+                    pricing.Discount, false, false) + ".");
         }
 
         internal void ShowStatus(IMyPlayer player, ulong steamId, long clientGridId, long policyId,
@@ -396,7 +428,17 @@ namespace ShipInsurance
                 return;
             }
 
-            ClaimQuote quote = BuildQuote(policy);
+            IMyFunctionalBlock terminal = FindServiceTerminal(serviceTerminalId);
+            EconomyPricingContext pricing = BuildEconomyPricingContext(player, terminal);
+            ClaimQuote quote = BuildQuote(policy, pricing);
+            bool remote = HasRecoveryOrder(policy) ||
+                          (policyId > 0 && terminal != null &&
+                           !IsPolicyWithinServiceRange(policy, terminal));
+            if (remote)
+            {
+                quote.Recovery = true;
+                ApplyRecoveryPricing(policy, quote, pricing);
+            }
             StringBuilder text = new StringBuilder(FormatQuote(policy, quote));
             if (HasRecoveryOrder(policy))
             {
@@ -404,8 +446,7 @@ namespace ShipInsurance
             }
             else
             {
-                IMyFunctionalBlock terminal = FindServiceTerminal(serviceTerminalId);
-                if (policyId > 0 && terminal != null && !IsPolicyWithinServiceRange(policy, terminal))
+                if (remote)
                 {
                     double distance = Vector3D.Distance(terminal.GetPosition(), policy.LastKnownPose.Position);
                     long transportFee = InsuranceMath.RemoteRecoveryFee(distance,
@@ -454,15 +495,23 @@ namespace ShipInsurance
                 return;
             }
 
-            _state.Policies.Remove(policy);
-            for (int i = 0; i < policy.Grids.Count; i++)
-            {
-                long gridId = policy.Grids[i].GridEntityId;
-                if (FindPolicyByGrid(gridId) == null) UnsubscribeGrid(gridId);
-            }
+            long refund = policy.Consumed
+                ? 0
+                : InsuranceMath.CancellationRefund(policy.EnrollmentCost,
+                    _config.CancellationRefundFraction);
+            if (refund > 0) player.RequestChangeBalance(refund);
+
+            bool consumed = policy.Consumed;
+            RemovePolicy(policy);
             _dirty = true;
             SaveState();
-            SendResponse(steamId, "Policy #" + policy.PolicyId + " canceled. Enrollment fee is not refunded.");
+            string refundText = consumed
+                ? " No refund: policy was already used."
+                : refund > 0
+                    ? " Refunded " + Money(refund) + " SC (" +
+                      Percent(_config.CancellationRefundFraction) + " of paid enrollment)."
+                    : " No cancellation refund was due.";
+            SendResponse(steamId, "Policy #" + policy.PolicyId + " canceled." + refundText);
         }
 
         internal void ReloadConfig(IMyPlayer player, ulong steamId)
@@ -489,11 +538,32 @@ namespace ShipInsurance
             }
 
             IMyFunctionalBlock serviceTerminal = FindServiceTerminal(serviceTerminalId);
+            EconomyPricingContext pricing = BuildEconomyPricingContext(player, serviceTerminal);
             if (HasRecoveryOrder(policy) && FindServiceTerminal(policy.RecoveryTerminalEntityId) == null)
             {
                 ClearRecoveryOrder(policy);
                 _dirty = true;
                 SaveState();
+            }
+
+            if (policy.Consumed && !HasRecoveryOrder(policy))
+            {
+                SendResponse(steamId, "This insurance policy has already been used up.");
+                return;
+            }
+            if (!HasRecoveryOrder(policy))
+            {
+                long nowUtcTicks = DateTime.UtcNow.Ticks;
+                long cooldownReadyUtcTicks = GetInsuranceCooldownReadyUtcTicks(
+                    player.IdentityId, nowUtcTicks);
+                long cooldownSeconds = InsuranceMath.RemainingSeconds(
+                    cooldownReadyUtcTicks, nowUtcTicks);
+                if (cooldownSeconds > 0)
+                {
+                    SendResponse(steamId, "Insurance services are cooling down for " +
+                        Duration(cooldownSeconds) + ".");
+                    return;
+                }
             }
 
             bool hasLiveGrid = HasLivePolicyGrid(policy);
@@ -533,12 +603,11 @@ namespace ShipInsurance
                 return;
             }
 
-            ClaimQuote quote = BuildQuote(policy);
+            ClaimQuote quote = BuildQuote(policy, pricing);
             if (remoteRecovery)
             {
                 quote.Recovery = true;
-                quote.Cost = InsuranceMath.ClaimFee(quote.BaselineValue,
-                    _config.ClaimValueFraction, _config.MinimumClaimFee);
+                ApplyRecoveryPricing(policy, quote, pricing);
             }
             if (quote.Recovery && !_config.AllowTotalLossRespawn)
             {
@@ -661,6 +730,12 @@ namespace ShipInsurance
             long refund = quote.Cost - actualCost;
             if (refund > 0) player.RequestChangeBalance(refund);
 
+            if (repairedBlocks <= 0)
+            {
+                SendResponse(steamId, "No covered blocks were restored. Claim charge was refunded; policy remains active.");
+                return;
+            }
+
             long transportFee = policy.RecoveryTransportFee;
             policy.LastClaimUtcTicks = DateTime.UtcNow.Ticks;
             ClearRecoveryOrder(policy);
@@ -673,13 +748,23 @@ namespace ShipInsurance
                 AttackerName = player.DisplayName,
                 DamageAmount = repairedBlocks
             });
+            long insuranceCooldownSeconds = remoteRecovery
+                ? InsuranceMath.RemainingSeconds(GetInsuranceCooldownReadyUtcTicks(
+                    player.IdentityId, policy.LastClaimUtcTicks), policy.LastClaimUtcTicks)
+                : StartInsuranceCooldown(player.IdentityId, actualCost,
+                    policy.LastClaimUtcTicks);
+            RemovePolicy(policy);
             _dirty = true;
             SaveState();
 
             SendResponse(steamId, "Claim complete for policy #" + policy.PolicyId + ": restored " + repairedBlocks +
                 " blocks, charged " + Money(actualCost) + " SC" +
                 (remoteRecovery ? ", plus " + Money(transportFee) + " SC transport paid when ordered" : string.Empty) +
-                (refund > 0 ? ", refunded " + Money(refund) + " SC." : "."));
+                (refund > 0 ? ", refunded " + Money(refund) + " SC" : string.Empty) +
+                ". Policy used up" +
+                (insuranceCooldownSeconds > 0
+                    ? "; insurance cooldown " + Duration(insuranceCooldownSeconds)
+                    : string.Empty) + ".");
         }
 
         private void BeginRemoteRecovery(IMyPlayer player, ulong steamId, InsurancePolicy policy,
@@ -713,6 +798,15 @@ namespace ShipInsurance
             policy.RecoveryDistanceMeters = distance;
             policy.RecoveryTransportFee = transportFee;
             policy.RecoveryExpedited = false;
+            policy.RecoveryClaimCost = quote.Cost;
+            policy.RecoveryClaimCostLocked = true;
+            policy.RecoveryDynamicPrice = quote.DynamicRecoveryPrice;
+            policy.RecoveryPricingFactionTag = quote.FactionTag;
+            policy.RecoveryPricingReputation = quote.FactionReputation;
+            policy.RecoveryPricingDiscount = quote.FactionDiscount;
+            policy.Consumed = true;
+            long insuranceCooldownSeconds = StartInsuranceCooldown(player.IdentityId,
+                InsuranceMath.Add(quote.Cost, transportFee), nowUtcTicks);
             AddIncident(policy, new IncidentRecord
             {
                 UtcTicks = nowUtcTicks,
@@ -724,7 +818,11 @@ namespace ShipInsurance
             SaveState();
 
             SendResponse(steamId, FormatQuote(policy, quote) +
-                FormatRecoveryOrder(policy, serviceTerminal.EntityId, nowUtcTicks));
+                FormatRecoveryOrder(policy, serviceTerminal.EntityId, nowUtcTicks) +
+                "\nPolicy used up by transport order" +
+                (insuranceCooldownSeconds > 0
+                    ? "; insurance cooldown " + Duration(insuranceCooldownSeconds)
+                    : string.Empty) + ".");
         }
 
         internal void ExpediteRecovery(IMyPlayer player, ulong steamId, long policyId,
@@ -795,7 +893,7 @@ namespace ShipInsurance
                 FormatRecoveryOrder(policy, serviceTerminalId, nowUtcTicks));
         }
 
-        private ClaimQuote BuildQuote(InsurancePolicy policy)
+        private ClaimQuote BuildQuote(InsurancePolicy policy, EconomyPricingContext pricing)
         {
             ClaimQuote quote = new ClaimQuote
             {
@@ -846,9 +944,40 @@ namespace ShipInsurance
             }
 
             quote.Recovery = InsuranceMath.RequiresRecovery(quote.TotalLoss, missingGrid, quote.LossRatio);
-            quote.Cost = InsuranceMath.ClaimFee(quote.Recovery ? quote.BaselineValue : quote.LossValue,
-                _config.ClaimValueFraction, _config.MinimumClaimFee);
+            if (quote.Recovery)
+                ApplyRecoveryPricing(policy, quote, pricing);
+            else
+                quote.Cost = InsuranceMath.ClaimFee(quote.LossValue,
+                    _config.ClaimValueFraction, _config.MinimumClaimFee);
             return quote;
+        }
+
+        private void ApplyRecoveryPricing(InsurancePolicy policy, ClaimQuote quote,
+            EconomyPricingContext pricing)
+        {
+            quote.RecoveryValue = quote.BaselineValue;
+            quote.FactionTag = pricing.FactionTag;
+            quote.FactionReputation = pricing.Reputation;
+            quote.FactionDiscount = pricing.Discount;
+            quote.DynamicRecoveryPrice = pricing.DynamicRecoveryPrice;
+
+            if (HasRecoveryOrder(policy) && policy.RecoveryClaimCostLocked)
+            {
+                quote.Cost = policy.RecoveryClaimCost;
+                quote.FactionTag = policy.RecoveryPricingFactionTag;
+                quote.FactionReputation = policy.RecoveryPricingReputation;
+                quote.FactionDiscount = policy.RecoveryPricingDiscount;
+                quote.DynamicRecoveryPrice = policy.RecoveryDynamicPrice;
+                quote.RecoveryPriceLocked = true;
+                return;
+            }
+
+            if (pricing.DynamicRecoveryPrice)
+                quote.RecoveryValue = CalculatePolicyBaselineValue(policy,
+                    pricing.ComponentPrices);
+            quote.Cost = InsuranceMath.ClaimFee(quote.RecoveryValue,
+                _config.ClaimValueFraction, _config.MinimumClaimFee,
+                pricing.Discount);
         }
 
         private void AddRepairItem(ClaimQuote quote, MyObjectBuilder_CubeBlock snapshot, IMySlimBlock current,
@@ -1011,7 +1140,28 @@ namespace ShipInsurance
                    "\nLoss: " + Percent(quote.LossRatio) + " (" + Money(quote.LossValue) + " / " + Money(quote.BaselineValue) + " SC)" +
                    "\nMissing: " + quote.MissingBlocks + ", damaged: " + quote.DamagedBlocks + ", conflicts: " + quote.ConflictingBlocks +
                    "\nClaim price: " + Money(quote.Cost) + " SC" +
-                   (quote.TotalLoss ? " [total-loss recovery]" : quote.Recovery ? " [full group recovery]" : string.Empty);
+                   (quote.TotalLoss ? " [total-loss recovery]" : quote.Recovery ? " [full group recovery]" : string.Empty) +
+                   FormatEconomyPricing(quote.FactionTag, quote.FactionReputation,
+                       quote.FactionDiscount, quote.DynamicRecoveryPrice,
+                       quote.RecoveryPriceLocked);
+        }
+
+        private static string FormatEconomyPricing(string factionTag, int reputation,
+            double discount, bool dynamicRecoveryPrice, bool locked)
+        {
+            if (string.IsNullOrWhiteSpace(factionTag) && !dynamicRecoveryPrice && !locked)
+                return string.Empty;
+
+            bool economy = !string.IsNullOrWhiteSpace(factionTag) || dynamicRecoveryPrice;
+            StringBuilder text = new StringBuilder(" [");
+            if (economy) text.Append("economy");
+            if (!string.IsNullOrWhiteSpace(factionTag))
+                text.Append(" ").Append(factionTag).Append(" rep ").Append(reputation);
+            if (discount > 0.0)
+                text.Append(", ").Append(Percent(discount)).Append(" discount");
+            if (dynamicRecoveryPrice) text.Append(", market priced");
+            if (locked) text.Append(economy ? ", locked quote" : "locked quote");
+            return text.Append("]").ToString();
         }
 
         private string FormatRecoveryOrder(InsurancePolicy policy, long serviceTerminalId, long nowUtcTicks)
@@ -1054,6 +1204,74 @@ namespace ShipInsurance
                    policy.RecoveryReadyUtcTicks > 0;
         }
 
+        private void RemovePolicy(InsurancePolicy policy)
+        {
+            if (policy == null || !_state.Policies.Remove(policy)) return;
+            for (int i = 0; i < policy.Grids.Count; i++)
+            {
+                long gridId = policy.Grids[i].GridEntityId;
+                if (FindPolicyByGrid(gridId) == null) UnsubscribeGrid(gridId);
+            }
+        }
+
+        private long GetInsuranceCooldownReadyUtcTicks(long ownerIdentityId,
+            long nowUtcTicks)
+        {
+            if (_state.Cooldowns == null) return 0;
+            if (_config.InsuranceCooldownCreditsPerSecond <= 0)
+            {
+                if (_state.Cooldowns.Count > 0)
+                {
+                    _state.Cooldowns.Clear();
+                    _dirty = true;
+                }
+                return 0;
+            }
+            for (int i = _state.Cooldowns.Count - 1; i >= 0; i--)
+            {
+                InsuranceCooldown cooldown = _state.Cooldowns[i];
+                if (cooldown == null || cooldown.ReadyUtcTicks <= nowUtcTicks)
+                {
+                    _state.Cooldowns.RemoveAt(i);
+                    _dirty = true;
+                    continue;
+                }
+                if (cooldown.OwnerIdentityId == ownerIdentityId)
+                    return cooldown.ReadyUtcTicks;
+            }
+            return 0;
+        }
+
+        private long StartInsuranceCooldown(long ownerIdentityId, long serviceCost,
+            long nowUtcTicks)
+        {
+            long seconds = InsuranceMath.InsuranceCooldownSeconds(serviceCost,
+                _config.InsuranceCooldownCreditsPerSecond,
+                _config.InsuranceCooldownMinimumSeconds,
+                _config.InsuranceCooldownMaximumSeconds);
+            if (seconds <= 0) return 0;
+
+            if (_state.Cooldowns == null)
+                _state.Cooldowns = new List<InsuranceCooldown>();
+            InsuranceCooldown cooldown = null;
+            for (int i = 0; i < _state.Cooldowns.Count; i++)
+            {
+                if (_state.Cooldowns[i].OwnerIdentityId != ownerIdentityId) continue;
+                cooldown = _state.Cooldowns[i];
+                break;
+            }
+            if (cooldown == null)
+            {
+                cooldown = new InsuranceCooldown { OwnerIdentityId = ownerIdentityId };
+                _state.Cooldowns.Add(cooldown);
+            }
+            cooldown.ReadyUtcTicks = InsuranceMath.Add(nowUtcTicks,
+                InsuranceMath.Multiply(seconds, TimeSpan.TicksPerSecond));
+            cooldown.ServiceCost = Math.Max(0, serviceCost);
+            _dirty = true;
+            return seconds;
+        }
+
         private static void ClearRecoveryOrder(InsurancePolicy policy)
         {
             policy.RecoveryTerminalEntityId = 0;
@@ -1061,6 +1279,12 @@ namespace ShipInsurance
             policy.RecoveryDistanceMeters = 0.0;
             policy.RecoveryTransportFee = 0;
             policy.RecoveryExpedited = false;
+            policy.RecoveryClaimCost = 0;
+            policy.RecoveryClaimCostLocked = false;
+            policy.RecoveryDynamicPrice = false;
+            policy.RecoveryPricingFactionTag = null;
+            policy.RecoveryPricingReputation = 0;
+            policy.RecoveryPricingDiscount = 0.0;
         }
 
         private static string Distance(double meters)
@@ -1102,16 +1326,30 @@ namespace ShipInsurance
 
         private long CalculateBaselineValue(MyObjectBuilder_CubeGrid blueprint)
         {
+            return CalculateBaselineValue(blueprint, null);
+        }
+
+        private long CalculateBaselineValue(MyObjectBuilder_CubeGrid blueprint,
+            Dictionary<MyDefinitionId, long> componentPrices)
+        {
             long value = 0;
             for (int i = 0; i < blueprint.CubeBlocks.Count; i++)
             {
                 MyObjectBuilder_CubeBlock block = blueprint.CubeBlocks[i];
-                value = InsuranceMath.Add(value, InsuranceMath.Scale(GetBlockComponentValue(block), InsuranceMath.Clamp01(block.IntegrityPercent)));
+                value = InsuranceMath.Add(value, InsuranceMath.Scale(
+                    GetBlockComponentValue(block.GetId(), componentPrices),
+                    InsuranceMath.Clamp01(block.IntegrityPercent)));
             }
             return value;
         }
 
         private long CalculatePolicyBaselineValue(InsurancePolicy policy)
+        {
+            return CalculatePolicyBaselineValue(policy, null);
+        }
+
+        private long CalculatePolicyBaselineValue(InsurancePolicy policy,
+            Dictionary<MyDefinitionId, long> componentPrices)
         {
             long value = 0;
             if (policy == null || policy.Grids == null) return value;
@@ -1119,7 +1357,8 @@ namespace ShipInsurance
             {
                 MyObjectBuilder_CubeGrid blueprint = policy.Grids[i].Blueprint;
                 if (blueprint == null || blueprint.CubeBlocks == null) continue;
-                value = InsuranceMath.Add(value, CalculateBaselineValue(blueprint));
+                value = InsuranceMath.Add(value,
+                    CalculateBaselineValue(blueprint, componentPrices));
             }
             return value;
         }
@@ -1131,9 +1370,26 @@ namespace ShipInsurance
 
         private long GetBlockComponentValue(MyDefinitionId id)
         {
+            return GetBlockComponentValue(id, null);
+        }
+
+        private long GetBlockComponentValue(MyDefinitionId id,
+            Dictionary<MyDefinitionId, long> componentPrices)
+        {
+            if (componentPrices != null)
+                return CalculateBlockComponentValue(id, componentPrices);
+
             long cached;
             if (_blockComponentValues.TryGetValue(id, out cached)) return cached;
 
+            long value = CalculateBlockComponentValue(id, _componentPrices);
+            _blockComponentValues[id] = value;
+            return value;
+        }
+
+        private long CalculateBlockComponentValue(MyDefinitionId id,
+            Dictionary<MyDefinitionId, long> componentPrices)
+        {
             long value = 0;
             MyCubeBlockDefinition definition;
             if (MyDefinitionManager.Static.TryGetCubeBlockDefinition(id, out definition) && definition.Components != null)
@@ -1143,13 +1399,15 @@ namespace ShipInsurance
                     MyCubeBlockDefinition.Component component = definition.Components[i];
                     long unitValue;
                     if (component.Definition == null ||
-                        !_componentPrices.TryGetValue(component.Definition.Id, out unitValue))
-                        unitValue = Math.Max(0, _config.DefaultComponentPrice);
+                        !componentPrices.TryGetValue(component.Definition.Id, out unitValue))
+                    {
+                        if (component.Definition == null ||
+                            !_componentPrices.TryGetValue(component.Definition.Id, out unitValue))
+                            unitValue = Math.Max(0, _config.DefaultComponentPrice);
+                    }
                     value = InsuranceMath.Add(value, InsuranceMath.Scale(unitValue, component.Count));
                 }
             }
-
-            _blockComponentValues[id] = value;
             return value;
         }
 
@@ -1453,6 +1711,66 @@ namespace ShipInsurance
             return grid == null || grid.Closed ? null : grid;
         }
 
+        private EconomyPricingContext BuildEconomyPricingContext(IMyPlayer player,
+            IMyFunctionalBlock terminal)
+        {
+            EconomyPricingContext pricing = new EconomyPricingContext();
+            if ((!_config.UseEconomyFactionPricing && !_config.UseDynamicRecoveryPricing) ||
+                player == null || terminal == null || terminal.CubeGrid == null)
+                return pricing;
+
+            IMyFaction faction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(
+                terminal.OwnerId);
+            if (faction == null)
+            {
+                List<long> owners = terminal.CubeGrid.BigOwners;
+                for (int i = 0; i < owners.Count && faction == null; i++)
+                    faction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(owners[i]);
+            }
+            if (faction == null || !faction.IsEveryoneNpc()) return pricing;
+
+            IMyFactionStation station = null;
+            foreach (IMyFactionStation candidate in faction.Stations)
+            {
+                if (candidate.StationEntityId != terminal.CubeGrid.EntityId) continue;
+                station = candidate;
+                break;
+            }
+            if (station == null) return pricing;
+
+            pricing.FactionTag = faction.Tag;
+            pricing.Reputation = MyAPIGateway.Session.Factions
+                .GetReputationBetweenPlayerAndFaction(player.IdentityId, faction.FactionId);
+            if (_config.UseEconomyFactionPricing)
+            {
+                pricing.Discount = InsuranceMath.ReputationDiscount(pricing.Reputation,
+                    _config.EconomyFriendlyReputationMin,
+                    _config.EconomyFriendlyReputationMax,
+                    _config.EconomyMaximumFactionDiscount);
+            }
+
+            if (!_config.UseDynamicRecoveryPricing || station.StoreItems == null)
+                return pricing;
+
+            for (int i = 0; i < station.StoreItems.Count; i++)
+            {
+                IMyStoreItem item = station.StoreItems[i];
+                if (item == null || !item.IsActive || item.PricePerUnit <= 0 ||
+                    item.ItemType != ItemTypes.PhysicalItem ||
+                    item.StoreItemType != StoreItemTypes.Offer || !item.Item.HasValue)
+                    continue;
+
+                MyDefinitionId itemId = item.Item.Value;
+                if (itemId.TypeId != typeof(MyObjectBuilder_Component)) continue;
+                long oldPrice;
+                if (!pricing.ComponentPrices.TryGetValue(itemId, out oldPrice) ||
+                    item.PricePerUnit < oldPrice)
+                    pricing.ComponentPrices[itemId] = item.PricePerUnit;
+            }
+            pricing.DynamicRecoveryPrice = pricing.ComponentPrices.Count > 0;
+            return pricing;
+        }
+
         internal static IMyFunctionalBlock FindServiceTerminal(long entityId)
         {
             IMyEntity entity;
@@ -1535,6 +1853,8 @@ namespace ShipInsurance
         {
             _config.EnrollmentFlatFee = Math.Max(0, _config.EnrollmentFlatFee);
             _config.EnrollmentValueFraction = Math.Max(0.0, _config.EnrollmentValueFraction);
+            _config.CancellationRefundFraction = InsuranceMath.Clamp01(
+                _config.CancellationRefundFraction);
             _config.ClaimValueFraction = Math.Max(0.0, _config.ClaimValueFraction);
             _config.MinimumLossRatio = InsuranceMath.Clamp01(_config.MinimumLossRatio);
             _config.MinimumClaimFee = Math.Max(0, _config.MinimumClaimFee);
@@ -1555,6 +1875,23 @@ namespace ShipInsurance
                 _config.RemoteRecoveryExpediteCostPerSecond);
             _config.RemoteRecoveryExpediteFactor = InsuranceMath.Clamp01(
                 _config.RemoteRecoveryExpediteFactor);
+            if (_config.EconomyFriendlyReputationMin == int.MaxValue)
+                _config.EconomyFriendlyReputationMin = int.MaxValue - 1;
+            if (_config.EconomyFriendlyReputationMax <=
+                _config.EconomyFriendlyReputationMin)
+            {
+                _config.EconomyFriendlyReputationMax =
+                    _config.EconomyFriendlyReputationMin + 1;
+            }
+            _config.EconomyMaximumFactionDiscount = InsuranceMath.Clamp01(
+                _config.EconomyMaximumFactionDiscount);
+            _config.InsuranceCooldownCreditsPerSecond = Math.Max(0,
+                _config.InsuranceCooldownCreditsPerSecond);
+            _config.InsuranceCooldownMinimumSeconds = Math.Max(0,
+                _config.InsuranceCooldownMinimumSeconds);
+            _config.InsuranceCooldownMaximumSeconds = Math.Max(
+                _config.InsuranceCooldownMinimumSeconds,
+                _config.InsuranceCooldownMaximumSeconds);
         }
 
         private bool RebuildComponentPrices()
@@ -1652,6 +1989,11 @@ namespace ShipInsurance
                 }
 
                 if (_state.Policies == null) _state.Policies = new List<InsurancePolicy>();
+                if (_state.Cooldowns == null) _state.Cooldowns = new List<InsuranceCooldown>();
+                _state.Cooldowns.RemoveAll(delegate(InsuranceCooldown value)
+                {
+                    return value == null || value.OwnerIdentityId == 0;
+                });
                 for (int i = 0; i < _state.Policies.Count; i++) NormalizePolicy(_state.Policies[i]);
                 if (_state.NextPolicyId < 1) _state.NextPolicyId = 1;
             }
@@ -1678,6 +2020,7 @@ namespace ShipInsurance
             if (policy.Incidents == null) policy.Incidents = new List<IncidentRecord>();
             if (policy.GridEntityId == 0 && policy.Grids.Count > 0)
                 policy.GridEntityId = policy.Grids[0].GridEntityId;
+            if (HasRecoveryOrder(policy)) policy.Consumed = true;
         }
 
         private void SaveState()

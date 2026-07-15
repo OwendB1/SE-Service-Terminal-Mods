@@ -198,7 +198,8 @@ namespace ShipInsurance
                 switch (action)
                 {
                     case "insure":
-                        _runtime.InsureGrid(player, steamId, packet.ControlledGridId, serviceGrid);
+                        _runtime.InsureGrid(player, steamId, packet.ControlledGridId, serviceGrid,
+                            packet.ServiceTerminalId);
                         break;
                     case "status":
                         _runtime.ShowStatus(player, steamId, packet.ControlledGridId,

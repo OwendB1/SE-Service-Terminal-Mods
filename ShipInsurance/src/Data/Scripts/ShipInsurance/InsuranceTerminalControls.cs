@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using VRage.Game;
@@ -213,7 +214,8 @@ namespace ShipInsurance
                         Label = "NEW POLICY  |  INSURE " +
                             InsuranceRuntime.Money(policy.EnrollmentCost) + " SC  |  " +
                             policy.GridName + "  |  " +
-                            policy.DistanceMeters.ToString("0", CultureInfo.InvariantCulture) + " m"
+                            policy.DistanceMeters.ToString("0", CultureInfo.InvariantCulture) + " m" +
+                            EconomyPriceLabel(policy)
                     });
                     continue;
                 }
@@ -242,7 +244,8 @@ namespace ShipInsurance
                     Key = choice,
                     PolicyId = policy.PolicyId,
                     Label = "POLICY #" + policy.PolicyId + "  |  " + price + "  |  " +
-                        policy.GridName + "  |  " + state.ToUpperInvariant()
+                        policy.GridName + "  |  " + state.ToUpperInvariant() +
+                        EconomyPriceLabel(policy)
                 });
             }
 
@@ -262,6 +265,35 @@ namespace ShipInsurance
             if (selectedChoice == 0) selectedChoice = 1;
             SetSelectedServiceChoice(null, selectedChoice);
             return choices;
+        }
+
+        private static string EconomyPriceLabel(PolicySummary policy)
+        {
+            long cooldownSeconds = policy == null ? 0 : InsuranceMath.RemainingSeconds(
+                policy.InsuranceCooldownReadyUtcTicks, DateTime.UtcNow.Ticks);
+            if (policy == null || (string.IsNullOrWhiteSpace(policy.FactionTag) &&
+                !policy.DynamicRecoveryPrice && !policy.RecoveryPriceLocked &&
+                cooldownSeconds <= 0))
+                return string.Empty;
+
+            StringBuilder text = new StringBuilder("  |  ");
+            if (!string.IsNullOrWhiteSpace(policy.FactionTag))
+            {
+                text.Append(policy.FactionTag).Append(" REP ")
+                    .Append(policy.FactionReputation);
+                if (policy.FactionDiscountPercent > 0)
+                    text.Append(" -").Append(policy.FactionDiscountPercent).Append("%");
+            }
+            if (policy.DynamicRecoveryPrice)
+                text.Append(string.IsNullOrWhiteSpace(policy.FactionTag) ? "MARKET" : " MARKET");
+            if (policy.RecoveryPriceLocked)
+                text.Append(" LOCKED");
+            if (cooldownSeconds > 0)
+                text.Append(string.IsNullOrWhiteSpace(policy.FactionTag) &&
+                            !policy.DynamicRecoveryPrice && !policy.RecoveryPriceLocked
+                    ? "COOLDOWN "
+                    : " COOLDOWN ").Append(InsuranceRuntime.Duration(cooldownSeconds));
+            return text.ToString();
         }
 
         internal List<InsuranceServiceChoice> GetServiceChoices(IMyTerminalBlock terminal, bool force)

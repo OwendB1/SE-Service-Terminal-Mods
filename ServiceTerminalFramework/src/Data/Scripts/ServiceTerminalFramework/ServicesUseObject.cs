@@ -36,8 +36,9 @@ namespace ServiceTerminalFramework
             if (actionEnum == PrimaryAction)
             {
                 FrameworkSession.Log("Services detector used (terminal=" + Owner.EntityId + ")");
-                _original.Use(actionEnum, user);
-                ServicesMenuHud.Show(Owner as IMyTerminalBlock, user);
+                if (!ServicesMenuHud.Show(Owner as IMyTerminalBlock, user,
+                    delegate { _original.Use(actionEnum, user); }))
+                    _original.Use(actionEnum, user);
                 return;
             }
 

@@ -15,7 +15,7 @@ Server-authoritative Space Engineers grid insurance and paid snapshot repair.
 
 Each policy covers the complete mechanically linked grid group present at enrollment. The largest grid is its anchor; sanitized snapshots and relative transforms preserve every rotor, piston, and attached subgrid as one truth state. The mod tracks later block damage/removal and attacker attribution, then offers a value-based claim once covered loss reaches the configured threshold.
 
-Using an Economy 2 Services Terminal opens vanilla Services immediately with the framework's provider list kept visible beside its right edge. The full list occupies the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window sized and resolution-scaled like Space Engineers' native terminal. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. The framework temporarily hides the normal gameplay HUD while a custom service is active and restores the player's previous HUD mode when it closes. Selecting **Vanilla services** dismisses the active mod service and reveals the already-open native screen.
+Using an Economy 2 Services Terminal opens the framework's centered provider menu with wide service buttons before any service screen. After a custom service is selected, the provider list moves to the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window without opening vanilla Services underneath. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. **Close** and Escape are owned by the framework picker, which closes the active service and restores the previous gameplay HUD mode. Selecting **Vanilla services** dismisses the picker and opens the native screen.
 
 ## Client dependency
 
@@ -40,6 +40,10 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
 - Claim price is `ClaimValueFraction * covered loss`, subject to `MinimumClaimFee`.
 - A conflicting replacement block at an insured position blocks the claim. Remove that block first; the mod never deletes player changes.
 - Loss above 80%, total group loss, or a completely missing insured subgrid becomes full recovery instead of repair. Recovery costs `ClaimValueFraction * full snapshot value` and replaces the insured group from clean, fully built snapshots.
+- Optional economy-faction pricing discounts enrollment and full-recovery value charges according to the player's reputation with the NPC faction operating the Services Terminal. Repair, transport, and expedite fees are unchanged.
+- Optional dynamic recovery pricing uses active component offer prices at that economy station, with `ComponentPrices` as the fallback for components the station does not sell.
+- Every successful repair or recovery consumes its policy. A remote policy is committed and consumed when transport is ordered, but remains visible until delivery can be completed.
+- Insurance service use starts a player-wide cooldown based on service value. Other policies can be purchased during it, but cannot repair, recover, or order transport until it expires.
 - A destroyed or service-unreachable group can be ordered to the current Services Terminal. Ordering immediately charges a distance-based transport fee and starts a persistent, terminal-bound cooldown based on the terminal's distance from the policy's last known grid position.
 - **Status** shows the live recovery ETA and expedite quote. **Expedite remote recovery** can be purchased once per order; like vanilla grid storage, its price is based on remaining seconds and it multiplies the remaining cooldown by the configured factor.
 - Once the recovery arrives, use **Claim / recover** again to pay the normal full-recovery claim price and deploy the group into free space near the same Services Terminal. Its remote insured remnants are removed; grids attached after enrollment are preserved.
@@ -53,6 +57,7 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
 <InsuranceConfig>
   <EnrollmentFlatFee>0</EnrollmentFlatFee>
   <EnrollmentValueFraction>0.5</EnrollmentValueFraction>
+  <CancellationRefundFraction>0.5</CancellationRefundFraction>
   <ClaimValueFraction>1</ClaimValueFraction>
   <MinimumLossRatio>0.25</MinimumLossRatio>
   <MinimumClaimFee>0</MinimumClaimFee>
@@ -70,6 +75,14 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
   <RemoteRecoveryMaximumSeconds>3600</RemoteRecoveryMaximumSeconds>
   <RemoteRecoveryExpediteCostPerSecond>1000</RemoteRecoveryExpediteCostPerSecond>
   <RemoteRecoveryExpediteFactor>0.5</RemoteRecoveryExpediteFactor>
+  <UseEconomyFactionPricing>false</UseEconomyFactionPricing>
+  <UseDynamicRecoveryPricing>false</UseDynamicRecoveryPricing>
+  <EconomyFriendlyReputationMin>500</EconomyFriendlyReputationMin>
+  <EconomyFriendlyReputationMax>1500</EconomyFriendlyReputationMax>
+  <EconomyMaximumFactionDiscount>0.1</EconomyMaximumFactionDiscount>
+  <InsuranceCooldownCreditsPerSecond>1000</InsuranceCooldownCreditsPerSecond>
+  <InsuranceCooldownMinimumSeconds>60</InsuranceCooldownMinimumSeconds>
+  <InsuranceCooldownMaximumSeconds>86400</InsuranceCooldownMaximumSeconds>
   <ComponentPrices>
     <!-- Representative structure; actual entries and seed prices are generated. -->
     <Component>
@@ -89,6 +102,12 @@ Edit any generated component price, then run `/insurance reload` or restart the 
 `AllowTotalLossRespawn` is the backward-compatible setting name for all full, total-loss, and remote recovery.
 
 Remote transport costs at least one kilometer of `RemoteRecoveryFeePerKilometer`, then scales with actual distance. Cooldown is `distance in km * RemoteRecoverySecondsPerKilometer`, clamped between the configured minimum and maximum. Expedite costs `remaining seconds * RemoteRecoveryExpediteCostPerSecond`; a factor of `0.5` halves the remaining time.
+
+When `UseEconomyFactionPricing` is enabled at an NPC economy station, reputation at or below `EconomyFriendlyReputationMin` gives no discount. Reputation scales linearly to `EconomyMaximumFactionDiscount` at `EconomyFriendlyReputationMax`, then stays capped. The enrollment flat fee and minimum claim fee remain price floors. When `UseDynamicRecoveryPricing` is enabled, full recovery values each component from the station's cheapest active offer and falls back to the configured component price when no offer exists. Remote recovery locks its full-recovery claim price when transport is ordered, so later reputation or market changes cannot alter the displayed arrival price.
+
+Canceling an unused policy refunds `CancellationRefundFraction` of the enrollment price actually paid; the default is `0.5` (50%). The value is clamped from `0` to `1`, and fractional credits round down. A policy already used for repair, recovery, or transport receives no cancellation refund. Policies created by older versions did not record their paid enrollment price and therefore receive no refund.
+
+Insurance cooldown is `ceil(service cost / InsuranceCooldownCreditsPerSecond)` seconds, clamped between the configured minimum and maximum. Local service uses the final charged repair or recovery cost. Remote transport commits the policy immediately and uses the locked recovery price plus transport fee. Set `InsuranceCooldownCreditsPerSecond` to `0` to disable only the cooldown; policies remain single-use. A pending remote delivery may still be completed during cooldown.
 
 ## Scope
 
