@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using ProtoBuf;
 using VRage;
 using VRage.Game;
@@ -12,8 +13,7 @@ namespace ShipInsurance
         public double ClaimValueFraction = 1.00;
         public double MinimumLossRatio = 0.25;
         public long MinimumClaimFee = 0;
-        public long UnknownComponentValue = 100;
-        public long UnknownBlockValue = 1000;
+        public long DefaultComponentPrice = 100;
         public int MaxPoliciesPerPlayer = 5;
         public int MaxIncidentLogEntries = 100;
         public double TotalLossExtraClearance = 10.0;
@@ -27,6 +27,15 @@ namespace ShipInsurance
         public int RemoteRecoveryMaximumSeconds = 3600;
         public long RemoteRecoveryExpediteCostPerSecond = 1000;
         public double RemoteRecoveryExpediteFactor = 0.5;
+        [XmlArrayItem("Component")]
+        public List<InsuranceComponentPrice> ComponentPrices =
+            new List<InsuranceComponentPrice>();
+    }
+
+    public sealed class InsuranceComponentPrice
+    {
+        public string SubtypeId;
+        public long Price;
     }
 
     [ProtoContract]
@@ -108,6 +117,12 @@ namespace ShipInsurance
         [ProtoMember(9)] public long ExpeditePrice;
         [ProtoMember(10)] public int ExpediteReductionPercent;
         [ProtoMember(11)] public bool RecoveryExpedited;
+        [ProtoMember(12)] public long ClaimCost;
+        [ProtoMember(13)] public bool Recovery;
+        [ProtoMember(14)] public long TransportCost;
+        [ProtoMember(15)] public long EnrollmentCost;
+        [ProtoMember(16)] public double DistanceMeters;
+        [ProtoMember(17)] public double LossRatio;
     }
 
     internal sealed class ClaimQuote

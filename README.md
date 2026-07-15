@@ -1,14 +1,25 @@
-# Ship Insurance
+# SE Service Terminal Mods
+
+Monorepo for Space Engineers mods that extend the Economy 2 Services Terminal.
+
+## Projects
+
+- **Service Terminal Framework** owns the live `services` detector proxy and displays a responsive side navigation containing vanilla Services plus every registered mod service.
+- **Ship Insurance** provides mechanically linked grid-group insurance and registers its Rich HUD screen with the framework.
+
+The framework keeps the original vanilla use object and delegates its metadata, secondary action, and `Use()` call. It does not replace the Services Terminal definition or model. Other mods register a stable ID, display name, and client-side open delegate over the mod-message API; no compile-time project or assembly reference is required.
+
+## Ship Insurance
 
 Server-authoritative Space Engineers grid insurance and paid snapshot repair.
 
 Each policy covers the complete mechanically linked grid group present at enrollment. The largest grid is its anchor; sanitized snapshots and relative transforms preserve every rotor, piston, and attached subgrid as one truth state. The mod tracks later block damage/removal and attacker attribution, then offers a value-based claim once covered loss reaches the configured threshold.
 
-Economy 2 Services Terminals keep their native Services interaction on the upper half and gain a separate **Ship Insurance** interaction on the lower half of the display. It opens one unified Rich HUD window sized and resolution-scaled like Space Engineers' native terminal, with the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. From there, insure a group, request a quote, submit a claim, expedite remote recovery, inspect history, or cancel a policy. The normal terminal control-panel section remains available as a fallback.
+Using an Economy 2 Services Terminal opens vanilla Services immediately with the framework's provider list kept visible beside its right edge. The full list occupies the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window sized and resolution-scaled like Space Engineers' native terminal. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. The framework temporarily hides the normal gameplay HUD while a custom service is active and restores the player's previous HUD mode when it closes. Selecting **Vanilla services** dismisses the active mod service and reveals the already-open native screen.
 
 ## Client dependency
 
-[Rich HUD Master](https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081) must be enabled in the world. Without it, the native Services interaction and fallback control-panel controls still work; the physical Ship Insurance interaction shows a dependency notice instead of opening the custom page.
+[Service Terminal Framework](ServiceTerminalFramework/README.md) and [Rich HUD Master](https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081) must be enabled to expose Ship Insurance from the physical Services detector. If Rich HUD is unavailable, the retained vanilla Services interaction still opens normally. The secondary control-panel action also remains available.
 
 Snapshot inventories, construction stockpiles, ammunition, fuel, battery charge, and similar consumables are cleared through Space Engineers' projector sanitizer. Claims restore blocks and integrity, not cargo. Blocks added after enrollment remain untouched.
 
@@ -18,11 +29,11 @@ Snapshot inventories, construction stockpiles, ammunition, fuel, battery charge,
 | --- | --- |
 | `/insurance reload` | Reload server config; Admin rank required. |
 
-All player actions exist only in the Services Terminal UI. Existing policies—including destroyed and unreachable grids—appear directly in the target list; no policy ID entry is required.
+All player actions exist only in the Services Terminal UI. Existing policies—including destroyed and unreachable grids—appear directly in the target list; no policy ID entry is required. Each uninsured group shows its current enrollment quote, and every policy row shows its current repair or full-recovery price plus any remote transport charge.
 
 ## Pricing and claims
 
-- Block value is the sum of component `MinimalPricePerUnit` values. Configured fallbacks cover modded definitions without economy prices.
+- All grid valuation is component-based: each block contributes only the sum of `configured component price * required component count`. There is no block-level price or fallback. The server generates entries for every loaded vanilla and modded component, initially seeded from its definition price, but runtime insurance pricing uses only the generated `ComponentPrices` table.
 - Enrollment costs the larger of `EnrollmentFlatFee` and `EnrollmentValueFraction * snapshot value`.
 - Claim loss is value-weighted. Missing blocks contribute their insured integrity value; damaged blocks contribute lost integrity value.
 - Claims unlock when loss reaches `MinimumLossRatio` (25% by default).
@@ -45,8 +56,7 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
   <ClaimValueFraction>1</ClaimValueFraction>
   <MinimumLossRatio>0.25</MinimumLossRatio>
   <MinimumClaimFee>0</MinimumClaimFee>
-  <UnknownComponentValue>100</UnknownComponentValue>
-  <UnknownBlockValue>1000</UnknownBlockValue>
+  <DefaultComponentPrice>100</DefaultComponentPrice>
   <MaxPoliciesPerPlayer>5</MaxPoliciesPerPlayer>
   <MaxIncidentLogEntries>100</MaxIncidentLogEntries>
   <TotalLossExtraClearance>10</TotalLossExtraClearance>
@@ -60,10 +70,22 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
   <RemoteRecoveryMaximumSeconds>3600</RemoteRecoveryMaximumSeconds>
   <RemoteRecoveryExpediteCostPerSecond>1000</RemoteRecoveryExpediteCostPerSecond>
   <RemoteRecoveryExpediteFactor>0.5</RemoteRecoveryExpediteFactor>
+  <ComponentPrices>
+    <!-- Representative structure; actual entries and seed prices are generated. -->
+    <Component>
+      <SubtypeId>SteelPlate</SubtypeId>
+      <Price>100</Price>
+    </Component>
+    <Component>
+      <SubtypeId>Computer</SubtypeId>
+      <Price>1000</Price>
+    </Component>
+    <!-- Every other loaded component is generated here too. -->
+  </ComponentPrices>
 </InsuranceConfig>
 ```
 
-Edit generated file, then run `/insurance reload` or restart world. Policy snapshots and incident history persist in `ShipInsuranceState.bin64` in same world-storage namespace.
+Edit any generated component price, then run `/insurance reload` or restart the world. Missing entries—including components added by newly enabled mods—are automatically appended. `DefaultComponentPrice` is used only when a newly discovered component has no positive definition price from which to seed its generated entry. A price of `0` deliberately makes that component contribute no value. Updated prices affect new enrollment quotes and live repair/full-recovery quotes for existing policies. Policy snapshots and incident history persist in `ShipInsuranceState.bin64` in same world-storage namespace.
 `AllowTotalLossRespawn` is the backward-compatible setting name for all full, total-loss, and remote recovery.
 
 Remote transport costs at least one kilometer of `RemoteRecoveryFeePerKilometer`, then scales with actual distance. Cooldown is `distance in km * RemoteRecoverySecondsPerKilometer`, clamped between the configured minimum and maximum. Expedite costs `remaining seconds * RemoteRecoveryExpediteCostPerSecond`; a factor of `0.5` halves the remaining time.
@@ -74,16 +96,16 @@ One policy follows the mechanically linked group captured at enrollment. Later a
 
 ## Layout
 
-- `ShipInsurance.sln` - Visual Studio solution containing one mod project.
+- `ServiceTerminalMods.sln` - Visual Studio solution containing every mod project in the monorepo.
+- `ServiceTerminalFramework` - standalone framework mod, provider API, detector proxy, and responsive Rich HUD side navigation.
 - `ShipInsurance/ShipInsurance.csproj` - .NET Framework 4.8, C# 6, x64 MDK2 project.
 - `ShipInsurance/src` - Space Engineers mod payload uploaded to Steam Workshop.
-- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, command transport, runtime mechanics, terminal controls, unified Rich HUD window, use object, persistence, and pricing classes.
+- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, framework client, command transport, runtime mechanics, terminal controls, unified Rich HUD window, persistence, and pricing classes.
 - `ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework` - MIT-licensed Rich HUD Framework client sources used by the custom interactive window; its license is included in that directory.
-- `ShipInsurance/src/Models/Cubes/Large/ServicesTerminalInsurance.mwm` - vanilla proxy model with separated upper Services and lower Insurance detector boxes and independent highlight sections.
-- `ShipInsurance/src/Models/Cubes/Large/ServicesTerminalInsurance_LOD*.mwm` - vanilla geometry at every detail level with the tall display divided into two separately materialed horizontal screens.
-- `InsuranceTerminalModel.cs` changes only the runtime Services Terminal model path and restores it on unload, avoiding a duplicated vanilla block definition.
-- `tools/ServiceTerminalModelPatcher` - reproducible tool that generates the split detectors, highlight sections, and two-screen close-range geometry from the installed vanilla model.
-- `.github/workflows/steam-workshop-upload.yml` - production-branch and manual Steam upload pipeline.
+- `ServiceTerminalFrameworkClient.cs` registers Ship Insurance through the framework's load-order-safe mod-message API.
+- `ShipInsurance/src/Models` and `tools/ServiceTerminalModelPatcher` contain the previous split-model experiment for comparison; runtime code no longer loads those assets.
+- `.github/workflows/steam-workshop-upload.yml` - Ship Insurance upload pipeline.
+- `.github/workflows/service-terminal-framework-workshop-upload.yml` - independent framework upload pipeline.
 
 ## Local setup
 
@@ -99,13 +121,14 @@ Copy the MDK2 local settings template:
 
 ```bash
 cp ShipInsurance/ShipInsurance.mdk.local.ini.example ShipInsurance/ShipInsurance.mdk.local.ini
+cp ServiceTerminalFramework/ServiceTerminalFramework.mdk.local.ini.example ServiceTerminalFramework/ServiceTerminalFramework.mdk.local.ini
 ```
 
 Build:
 
 ```bash
-dotnet restore ShipInsurance.sln
-dotnet build ShipInsurance.sln -c Debug -p:Platform=x64
+dotnet restore ServiceTerminalMods.sln
+dotnet build ServiceTerminalMods.sln -c Debug -p:Platform=x64
 ```
 
 ## Steam Workshop pipeline
@@ -113,7 +136,7 @@ dotnet build ShipInsurance.sln -c Debug -p:Platform=x64
 Before uploading:
 
 1. Publish the initial workshop item manually.
-2. Replace both `0` values in `ShipInsurance/src/modinfo.sbmi` with its Workshop ID.
+2. Replace both `0` values in each mod's `src/modinfo.sbmi` with that mod's Workshop ID.
 3. Add GitHub Actions secrets `STEAM_USERNAME` and `STEAM_CONFIG_VDF`.
 
-Uploads run for mod payload changes pushed to `production`, or through manual workflow dispatch.
+Each mod uploads only when its own payload changes on `production`, or through its own manual workflow dispatch.
