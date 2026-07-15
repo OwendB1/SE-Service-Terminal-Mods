@@ -21,9 +21,9 @@ namespace ShipInsurance
                 ", dummy=" + dummyName + ")");
         }
 
-        public override UseActionEnum PrimaryAction { get { return UseActionEnum.Manipulate; } }
-        public override UseActionEnum SecondaryAction { get { return UseActionEnum.None; } }
-        public override UseActionEnum SupportedActions { get { return PrimaryAction; } }
+        public override UseActionEnum PrimaryAction => UseActionEnum.Manipulate;
+        public override UseActionEnum SecondaryAction => UseActionEnum.None;
+        public override UseActionEnum SupportedActions => PrimaryAction;
 
         public override MyActionDescription GetActionInfo(UseActionEnum actionEnum)
         {

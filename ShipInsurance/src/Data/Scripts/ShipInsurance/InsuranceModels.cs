@@ -122,10 +122,7 @@ namespace ShipInsurance
         public int ConflictingBlocks;
         public readonly List<RepairItem> Items = new List<RepairItem>();
 
-        public double LossRatio
-        {
-            get { return InsuranceMath.Ratio(LossValue, BaselineValue); }
-        }
+        public double LossRatio => InsuranceMath.Ratio(LossValue, BaselineValue);
     }
 
     internal sealed class RepairItem

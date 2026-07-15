@@ -37,7 +37,7 @@ namespace ShipInsurance
 
         internal event Action ServiceChoicesChanged;
 
-        internal long SelectedServiceChoice { get { return _selectedServiceChoice; } }
+        internal long SelectedServiceChoice => _selectedServiceChoice;
 
         internal InsuranceTerminalControls(InsuranceCommands commands)
         {
