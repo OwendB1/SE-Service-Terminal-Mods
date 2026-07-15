@@ -1528,9 +1528,10 @@ namespace ShipInsurance
             return InsuranceMath.Clamp01(value).ToString("P1", CultureInfo.InvariantCulture);
         }
 
-        internal static void Log(string message, Exception exception)
+        internal static void Log(string message, Exception exception = null)
         {
-            MyLog.Default.WriteLineAndConsole("[ShipInsurance] " + message + ": " + exception);
+            MyLog.Default.WriteLineAndConsole("[ShipInsurance] " + message +
+                (exception == null ? string.Empty : ": " + exception));
         }
     }
 }

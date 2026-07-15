@@ -11,6 +11,14 @@ using VRageMath;
 
 namespace ShipInsurance
 {
+    internal sealed class InsuranceServiceChoice
+    {
+        internal long Key;
+        internal long PolicyId;
+        internal long GridId;
+        internal string Label;
+    }
+
     internal sealed class InsuranceTerminalControls
     {
         private readonly InsuranceCommands _commands;
@@ -26,6 +34,10 @@ namespace ShipInsurance
         private IMyTerminalControlCombobox _serviceGridSelector;
         private IMyTerminalControlButton _serviceExpediteButton;
         private bool _serviceTerminalControlsRegistered;
+
+        internal event Action ServiceChoicesChanged;
+
+        internal long SelectedServiceChoice { get { return _selectedServiceChoice; } }
 
         internal InsuranceTerminalControls(InsuranceCommands commands)
         {
@@ -150,13 +162,21 @@ namespace ShipInsurance
 
         private void FillServiceChoices(List<MyTerminalControlComboBoxItem> items)
         {
-            RebuildServiceChoices(items);
+            List<InsuranceServiceChoice> choices = RebuildServiceChoices();
+            for (int i = 0; i < choices.Count; i++)
+            {
+                items.Add(new MyTerminalControlComboBoxItem
+                {
+                    Key = choices[i].Key,
+                    Value = MyStringId.GetOrCompute(choices[i].Label)
+                });
+            }
         }
 
         private long GetSelectedServiceChoice(IMyTerminalBlock block)
         {
             RequestServicePolicyList(block, false);
-            RebuildServiceChoices(new List<MyTerminalControlComboBoxItem>());
+            RebuildServiceChoices();
             return _selectedServiceChoice;
         }
 
@@ -169,8 +189,9 @@ namespace ShipInsurance
             UpdateExpeditePresentation();
         }
 
-        private void RebuildServiceChoices(List<MyTerminalControlComboBoxItem> items)
+        private List<InsuranceServiceChoice> RebuildServiceChoices()
         {
+            List<InsuranceServiceChoice> choices = new List<InsuranceServiceChoice>();
             _serviceChoicePolicies.Clear();
             _serviceChoiceGrids.Clear();
             long nextChoice = 1;
@@ -187,11 +208,12 @@ namespace ShipInsurance
                 string state = policy.RecoveryReadyUtcTicks > 0
                     ? remaining > 0 ? "recovery " + InsuranceRuntime.Duration(remaining) : "recovery ready"
                     : policy.TotalLoss ? "total loss" : policy.Remote ? "remote recovery" : "active";
-                items.Add(new MyTerminalControlComboBoxItem
+                choices.Add(new InsuranceServiceChoice
                 {
                     Key = choice,
-                    Value = MyStringId.GetOrCompute("Policy #" + policy.PolicyId + " " + policy.GridName +
-                        " [" + state + "]")
+                    PolicyId = policy.PolicyId,
+                    Label = "POLICY #" + policy.PolicyId + "  |  " + policy.GridName + "  |  " +
+                        state.ToUpperInvariant()
                 });
             }
 
@@ -209,29 +231,68 @@ namespace ShipInsurance
                 if (grid.EntityId == _selectedServiceGridId) selectedChoice = choice;
                 string name = string.IsNullOrWhiteSpace(grid.CustomName) ? grid.DisplayName : grid.CustomName;
                 double distance = Vector3D.Distance(servicePosition, grid.WorldAABB.Center);
-                items.Add(new MyTerminalControlComboBoxItem
+                choices.Add(new InsuranceServiceChoice
                 {
                     Key = choice,
-                    Value = MyStringId.GetOrCompute("New policy: " + name + " (" +
-                        distance.ToString("0", CultureInfo.InvariantCulture) + " m)")
+                    GridId = grid.EntityId,
+                    Label = "NEW POLICY  |  " + name + "  |  " +
+                        distance.ToString("0", CultureInfo.InvariantCulture) + " m"
                 });
             }
 
             if (nextChoice == 1)
             {
-                items.Add(new MyTerminalControlComboBoxItem
+                choices.Add(new InsuranceServiceChoice
                 {
                     Key = 0,
-                    Value = MyStringId.GetOrCompute("No policies or owned groups available")
+                    Label = "No policies or owned groups available"
                 });
                 _selectedServiceChoice = 0;
                 _selectedPolicyId = 0;
                 _selectedServiceGridId = 0;
-                return;
+                return choices;
             }
 
             if (selectedChoice == 0) selectedChoice = 1;
             SetSelectedServiceChoice(null, selectedChoice);
+            return choices;
+        }
+
+        internal List<InsuranceServiceChoice> GetServiceChoices(IMyTerminalBlock terminal, bool force)
+        {
+            if (!CanAccessServiceTerminal(terminal)) return new List<InsuranceServiceChoice>();
+            RequestServicePolicyList(terminal, force);
+            return RebuildServiceChoices();
+        }
+
+        internal void SelectServiceChoice(long choice)
+        {
+            SetSelectedServiceChoice(null, choice);
+        }
+
+        internal bool CanOpenServiceTerminal(IMyTerminalBlock terminal)
+        {
+            return CanAccessServiceTerminal(terminal);
+        }
+
+        internal bool HasSelectedPolicy(IMyTerminalBlock terminal)
+        {
+            return CanAccessServiceTerminal(terminal) && _selectedPolicyId != 0;
+        }
+
+        internal bool HasSelectedGroup(IMyTerminalBlock terminal)
+        {
+            return CanAccessServiceTerminal(terminal) && _selectedServiceGridId != 0;
+        }
+
+        internal bool CanExpedite(IMyTerminalBlock terminal)
+        {
+            return CanExpediteSelectedPolicy(terminal);
+        }
+
+        internal void ExecuteServiceAction(IMyTerminalBlock terminal, string command)
+        {
+            SendServiceTerminalCommand(terminal, command);
         }
 
         private List<IMyCubeGrid> FindNearbyOwnedGrids()
@@ -383,6 +444,12 @@ namespace ShipInsurance
 
             _servicePolicies.Clear();
             if (packet.Policies != null) _servicePolicies.AddRange(packet.Policies);
+            _servicePolicies.Sort(delegate(PolicySummary left, PolicySummary right)
+            {
+                int name = string.Compare(left.GridName, right.GridName,
+                    StringComparison.OrdinalIgnoreCase);
+                return name != 0 ? name : left.PolicyId.CompareTo(right.PolicyId);
+            });
 
             bool selectedPolicyExists = false;
             for (int i = 0; i < _servicePolicies.Count; i++)
@@ -399,6 +466,7 @@ namespace ShipInsurance
                 _serviceGridSelector.UpdateVisual();
             }
             UpdateExpeditePresentation();
+            if (ServiceChoicesChanged != null) ServiceChoicesChanged();
         }
 
         private void SendServiceTerminalCommand(IMyTerminalBlock terminal, string command)

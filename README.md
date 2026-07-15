@@ -4,7 +4,11 @@ Server-authoritative Space Engineers grid insurance and paid snapshot repair.
 
 Each policy covers the complete mechanically linked grid group present at enrollment. The largest grid is its anchor; sanitized snapshots and relative transforms preserve every rotor, piston, and attached subgrid as one truth state. The mod tracks later block damage/removal and attacker attribution, then offers a value-based claim once covered loss reaches the configured threshold.
 
-Economy 2 Services Terminals gain a custom **Ship Insurance** control-panel section. Stand at a functional, non-hostile Services Terminal, choose either an existing policy or a nearby uninsured mechanical group from one selector, then insure it, request a quote, submit a claim, expedite remote recovery, inspect history, or cancel a policy.
+Economy 2 Services Terminals keep their native Services interaction on the upper half and gain a separate **Ship Insurance** interaction on the lower half of the display. It opens one unified Rich HUD window sized and resolution-scaled like Space Engineers' native terminal, with the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. From there, insure a group, request a quote, submit a claim, expedite remote recovery, inspect history, or cancel a policy. The normal terminal control-panel section remains available as a fallback.
+
+## Client dependency
+
+[Rich HUD Master](https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081) must be enabled in the world. Without it, the native Services interaction and fallback control-panel controls still work; the physical Ship Insurance interaction shows a dependency notice instead of opening the custom page.
 
 Snapshot inventories, construction stockpiles, ammunition, fuel, battery charge, and similar consumables are cleared through Space Engineers' projector sanitizer. Claims restore blocks and integrity, not cargo. Blocks added after enrollment remain untouched.
 
@@ -14,7 +18,7 @@ Snapshot inventories, construction stockpiles, ammunition, fuel, battery charge,
 | --- | --- |
 | `/insurance reload` | Reload server config; Admin rank required. |
 
-All player actions exist only in the Services Terminal UI. Existing policies—including destroyed and unreachable grids—appear directly in the **Insurance target** selector; no policy ID entry is required.
+All player actions exist only in the Services Terminal UI. Existing policies—including destroyed and unreachable grids—appear directly in the target list; no policy ID entry is required.
 
 ## Pricing and claims
 
@@ -73,7 +77,12 @@ One policy follows the mechanically linked group captured at enrollment. Later a
 - `ShipInsurance.sln` - Visual Studio solution containing one mod project.
 - `ShipInsurance/ShipInsurance.csproj` - .NET Framework 4.8, C# 6, x64 MDK2 project.
 - `ShipInsurance/src` - Space Engineers mod payload uploaded to Steam Workshop.
-- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, command transport, runtime mechanics, terminal controls, persistence, and pricing classes.
+- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, command transport, runtime mechanics, terminal controls, unified Rich HUD window, use object, persistence, and pricing classes.
+- `ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework` - MIT-licensed Rich HUD Framework client sources used by the custom interactive window; its license is included in that directory.
+- `ShipInsurance/src/Models/Cubes/Large/ServicesTerminalInsurance.mwm` - vanilla proxy model with separated upper Services and lower Insurance detector boxes and independent highlight sections.
+- `ShipInsurance/src/Models/Cubes/Large/ServicesTerminalInsurance_LOD*.mwm` - vanilla geometry at every detail level with the tall display divided into two separately materialed horizontal screens.
+- `InsuranceTerminalModel.cs` changes only the runtime Services Terminal model path and restores it on unload, avoiding a duplicated vanilla block definition.
+- `tools/ServiceTerminalModelPatcher` - reproducible tool that generates the split detectors, highlight sections, and two-screen close-range geometry from the installed vanilla model.
 - `.github/workflows/steam-workshop-upload.yml` - production-branch and manual Steam upload pipeline.
 
 ## Local setup
