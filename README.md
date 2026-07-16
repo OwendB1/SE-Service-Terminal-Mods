@@ -15,6 +15,8 @@ Server-authoritative Space Engineers grid insurance and paid snapshot repair.
 
 Each policy covers the complete mechanically linked grid group present at enrollment. The largest grid is its anchor; sanitized snapshots and relative transforms preserve every rotor, piston, and attached subgrid as one truth state. The mod tracks later block damage/removal and attacker attribution, then offers a value-based claim once covered loss reaches the configured threshold.
 
+Each insured subgrid also carries a persistent policy token in Space Engineers' serialized mod storage. If an administrative repair or cut/paste recreates the grid with a different entity ID, the server reattaches the new entity to its existing policy. Tokens absent from the active policy state, and duplicates created while the registered grid still exists, are removed.
+
 Using an Economy 2 Services Terminal opens the framework's centered provider menu with wide service buttons before any service screen. After a custom service is selected, the provider list moves to the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window without opening vanilla Services underneath. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. **Close** and Escape are owned by the framework picker, which closes the active service and restores the previous gameplay HUD mode. Selecting **Vanilla services** dismisses the picker and opens the native screen.
 
 ## Client dependency

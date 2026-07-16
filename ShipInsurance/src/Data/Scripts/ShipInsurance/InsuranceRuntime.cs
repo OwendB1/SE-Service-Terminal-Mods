@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Sandbox.Definitions;
+using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using VRage;
 using VRage.Game;
@@ -20,6 +21,8 @@ namespace ShipInsurance
     {
         private const string ConfigFile = "ShipInsuranceConfig.xml";
         private const string StateFile = "ShipInsuranceState.bin64";
+        private static readonly Guid GridMarkerStorageKey =
+            new Guid("b3f19457-2e24-4d41-9fba-38b428f92b07");
         internal const double ServiceGridDiscoveryRange = 250.0;
         internal const double ServiceTerminalUseDistance = 15.0;
 
@@ -30,6 +33,7 @@ namespace ShipInsurance
         private readonly Dictionary<MyDefinitionId, long> _componentPrices =
             new Dictionary<MyDefinitionId, long>();
         private readonly HashSet<long> _repairingGrids = new HashSet<long>();
+        private readonly HashSet<long> _pendingGridReconciliation = new HashSet<long>();
 
         private InsuranceConfig _config = new InsuranceConfig();
         private InsuranceState _state = new InsuranceState();
@@ -59,8 +63,11 @@ namespace ShipInsurance
             {
                 LoadConfig();
                 LoadState();
+                MyAPIGateway.Entities.OnEntityAdd += OnEntityAdded;
+                InitializeGridMarkers();
                 MyAPIGateway.Session.DamageSystem.RegisterAfterDamageHandler(1000, OnDamageApplied);
                 RefreshGridSubscriptions();
+                if (_dirty) SaveState();
             }
         }
 
@@ -97,11 +104,15 @@ namespace ShipInsurance
             _blockComponentValues.Clear();
             _componentPrices.Clear();
             _repairingGrids.Clear();
+            _pendingGridReconciliation.Clear();
+            if (_isServer && MyAPIGateway.Entities != null)
+                MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdded;
             _sendResponse = null;
         }
 
         internal List<PolicySummary> BuildPolicySummaries(IMyPlayer player, long serviceTerminalId)
         {
+            ReconcilePendingGridMarkers();
             IMyFunctionalBlock terminal = FindServiceTerminal(serviceTerminalId);
             EconomyPricingContext pricing = BuildEconomyPricingContext(player, terminal);
             long cooldownReadyUtcTicks = GetInsuranceCooldownReadyUtcTicks(
@@ -361,7 +372,8 @@ namespace ShipInsurance
                 {
                     GridEntityId = member.EntityId,
                     Blueprint = blueprint,
-                    RelativePose = new MyPositionAndOrientation(member.WorldMatrix * anchorInverse)
+                    RelativePose = new MyPositionAndOrientation(member.WorldMatrix * anchorInverse),
+                    PersistentId = NewPersistentGridId()
                 });
                 baselineValue = InsuranceMath.Add(baselineValue, CalculateBaselineValue(blueprint));
                 blockCount += blueprint.CubeBlocks.Count;
@@ -399,7 +411,11 @@ namespace ShipInsurance
             };
 
             _state.Policies.Add(policy);
-            for (int i = 0; i < group.Count; i++) SubscribeGrid(group[i]);
+            for (int i = 0; i < group.Count; i++)
+            {
+                SetGridMarker(group[i], snapshots[i].PersistentId);
+                SubscribeGrid(group[i]);
+            }
             AddIncident(policy, new IncidentRecord
             {
                 UtcTicks = DateTime.UtcNow.Ticks,
@@ -1089,6 +1105,7 @@ namespace ShipInsurance
 
                 for (int i = 0; i < created.Count; i++)
                 {
+                    SetGridMarker(created[i], policy.Grids[i].PersistentId);
                     MyAPIGateway.Entities.AddEntity(created[i], true);
                     policy.Grids[i].GridEntityId = created[i].EntityId;
                     SubscribeGrid(created[i]);
@@ -1210,6 +1227,7 @@ namespace ShipInsurance
             for (int i = 0; i < policy.Grids.Count; i++)
             {
                 long gridId = policy.Grids[i].GridEntityId;
+                RemoveGridMarker(FindGrid(gridId), policy.Grids[i].PersistentId);
                 if (FindPolicyByGrid(gridId) == null) UnsubscribeGrid(gridId);
             }
         }
@@ -1575,8 +1593,133 @@ namespace ShipInsurance
             return cached;
         }
 
+        private void OnEntityAdded(IMyEntity entity)
+        {
+            IMyCubeGrid grid = entity as IMyCubeGrid;
+            if (!_active || !_isServer || grid == null) return;
+            _pendingGridReconciliation.Add(grid.EntityId);
+        }
+
+        private void InitializeGridMarkers()
+        {
+            for (int policyIndex = 0; policyIndex < _state.Policies.Count; policyIndex++)
+            {
+                InsurancePolicy policy = _state.Policies[policyIndex];
+                for (int gridIndex = 0; gridIndex < policy.Grids.Count; gridIndex++)
+                {
+                    InsuredGridSnapshot snapshot = policy.Grids[gridIndex];
+                    SetGridMarker(FindGrid(snapshot.GridEntityId), snapshot.PersistentId);
+                }
+            }
+
+            HashSet<IMyEntity> entities = new HashSet<IMyEntity>();
+            MyAPIGateway.Entities.GetEntities(entities,
+                delegate(IMyEntity entity) { return entity is IMyCubeGrid; });
+            foreach (IMyEntity entity in entities)
+                ReconcileGridMarker(entity as IMyCubeGrid);
+        }
+
+        private void ReconcilePendingGridMarkers()
+        {
+            if (_pendingGridReconciliation.Count == 0) return;
+            List<long> pending = new List<long>(_pendingGridReconciliation);
+            _pendingGridReconciliation.Clear();
+            for (int i = 0; i < pending.Count; i++)
+                ReconcileGridMarker(FindGrid(pending[i]));
+        }
+
+        private InsurancePolicy ReconcileGridMarker(IMyCubeGrid grid)
+        {
+            string persistentId;
+            if (grid == null || !TryGetGridMarker(grid, out persistentId)) return null;
+
+            InsurancePolicy policy;
+            InsuredGridSnapshot snapshot;
+            int gridIndex;
+            if (!TryFindPersistentGrid(persistentId, out policy, out snapshot, out gridIndex))
+            {
+                RemoveGridMarker(grid, persistentId);
+                return null;
+            }
+
+            if (snapshot.GridEntityId == grid.EntityId) return policy;
+            if (FindGrid(snapshot.GridEntityId) != null)
+            {
+                RemoveGridMarker(grid, persistentId);
+                return null;
+            }
+
+            long oldEntityId = snapshot.GridEntityId;
+            UnsubscribeGrid(oldEntityId);
+            _repairingGrids.Remove(oldEntityId);
+            snapshot.GridEntityId = grid.EntityId;
+            if (gridIndex == 0) policy.GridEntityId = grid.EntityId;
+            SetGridMarker(grid, persistentId);
+            SubscribeGrid(grid);
+            _dirty = true;
+            Log("Policy #" + policy.PolicyId + " reattached grid " +
+                oldEntityId + " -> " + grid.EntityId + ".");
+            return policy;
+        }
+
+        private bool TryFindPersistentGrid(string persistentId, out InsurancePolicy policy,
+            out InsuredGridSnapshot snapshot, out int gridIndex)
+        {
+            policy = null;
+            snapshot = null;
+            gridIndex = -1;
+            if (string.IsNullOrWhiteSpace(persistentId)) return false;
+
+            for (int policyIndex = 0; policyIndex < _state.Policies.Count; policyIndex++)
+            {
+                InsurancePolicy candidate = _state.Policies[policyIndex];
+                for (int candidateGridIndex = 0;
+                    candidateGridIndex < candidate.Grids.Count; candidateGridIndex++)
+                {
+                    InsuredGridSnapshot candidateGrid = candidate.Grids[candidateGridIndex];
+                    if (!string.Equals(candidateGrid.PersistentId, persistentId,
+                        StringComparison.Ordinal)) continue;
+                    policy = candidate;
+                    snapshot = candidateGrid;
+                    gridIndex = candidateGridIndex;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static string NewPersistentGridId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
+        private static bool TryGetGridMarker(IMyCubeGrid grid, out string persistentId)
+        {
+            persistentId = null;
+            return grid != null && grid.Storage != null &&
+                   grid.Storage.TryGetValue(GridMarkerStorageKey, out persistentId);
+        }
+
+        private static void SetGridMarker(IMyCubeGrid grid, string persistentId)
+        {
+            if (grid == null || string.IsNullOrWhiteSpace(persistentId)) return;
+            if (grid.Storage == null) grid.Storage = new MyModStorageComponent();
+            grid.Storage.SetValue(GridMarkerStorageKey, persistentId);
+        }
+
+        private static void RemoveGridMarker(IMyCubeGrid grid, string expectedPersistentId)
+        {
+            string current;
+            if (grid == null || grid.Storage == null ||
+                !grid.Storage.TryGetValue(GridMarkerStorageKey, out current)) return;
+            if (expectedPersistentId != null && !string.Equals(current,
+                expectedPersistentId, StringComparison.Ordinal)) return;
+            grid.Storage.RemoveValue(GridMarkerStorageKey);
+        }
+
         private void RefreshGridSubscriptions()
         {
+            ReconcilePendingGridMarkers();
             List<long> stale = new List<long>();
             foreach (KeyValuePair<long, IMyCubeGrid> pair in _subscribedGrids)
                 if (FindGrid(pair.Key) == null) stale.Add(pair.Key);
@@ -1587,8 +1730,11 @@ namespace ShipInsurance
                 InsurancePolicy policy = _state.Policies[i];
                 for (int gridIndex = 0; gridIndex < policy.Grids.Count; gridIndex++)
                 {
-                    IMyCubeGrid grid = FindGrid(policy.Grids[gridIndex].GridEntityId);
-                    if (grid != null) SubscribeGrid(grid);
+                    InsuredGridSnapshot snapshot = policy.Grids[gridIndex];
+                    IMyCubeGrid grid = FindGrid(snapshot.GridEntityId);
+                    if (grid == null) continue;
+                    SetGridMarker(grid, snapshot.PersistentId);
+                    SubscribeGrid(grid);
                 }
             }
         }
@@ -1657,7 +1803,7 @@ namespace ShipInsurance
                 for (int gridIndex = 0; gridIndex < policy.Grids.Count; gridIndex++)
                     if (policy.Grids[gridIndex].GridEntityId == gridId) return policy;
             }
-            return null;
+            return ReconcileGridMarker(FindGrid(gridId));
         }
 
         private static bool HasLivePolicyGrid(InsurancePolicy policy)
@@ -1995,6 +2141,7 @@ namespace ShipInsurance
                     return value == null || value.OwnerIdentityId == 0;
                 });
                 for (int i = 0; i < _state.Policies.Count; i++) NormalizePolicy(_state.Policies[i]);
+                NormalizePersistentGridIds();
                 if (_state.NextPolicyId < 1) _state.NextPolicyId = 1;
             }
             catch (Exception exception)
@@ -2021,6 +2168,35 @@ namespace ShipInsurance
             if (policy.GridEntityId == 0 && policy.Grids.Count > 0)
                 policy.GridEntityId = policy.Grids[0].GridEntityId;
             if (HasRecoveryOrder(policy)) policy.Consumed = true;
+        }
+
+        private void NormalizePersistentGridIds()
+        {
+            HashSet<string> used = new HashSet<string>(StringComparer.Ordinal);
+            for (int policyIndex = 0; policyIndex < _state.Policies.Count; policyIndex++)
+            {
+                InsurancePolicy policy = _state.Policies[policyIndex];
+                for (int gridIndex = 0; gridIndex < policy.Grids.Count; gridIndex++)
+                {
+                    InsuredGridSnapshot snapshot = policy.Grids[gridIndex];
+                    Guid parsed;
+                    string normalized = null;
+                    if (!string.IsNullOrWhiteSpace(snapshot.PersistentId) &&
+                        Guid.TryParse(snapshot.PersistentId, out parsed))
+                        normalized = parsed.ToString("N");
+
+                    if (normalized == null || !used.Add(normalized))
+                    {
+                        do normalized = NewPersistentGridId();
+                        while (!used.Add(normalized));
+                    }
+
+                    if (string.Equals(snapshot.PersistentId, normalized,
+                        StringComparison.Ordinal)) continue;
+                    snapshot.PersistentId = normalized;
+                    _dirty = true;
+                }
+            }
         }
 
         private void SaveState()

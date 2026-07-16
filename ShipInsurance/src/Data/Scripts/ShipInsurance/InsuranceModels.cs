@@ -100,6 +100,7 @@ namespace ShipInsurance
         [ProtoMember(1)] public long GridEntityId;
         [ProtoMember(2)] public MyObjectBuilder_CubeGrid Blueprint;
         [ProtoMember(3)] public MyPositionAndOrientation RelativePose;
+        [ProtoMember(4)] public string PersistentId;
     }
 
     [ProtoContract]
