@@ -213,6 +213,7 @@ namespace ShipInsurance
                         GridId = policy.SelectionGridId,
                         Label = "NEW POLICY  |  INSURE " +
                             InsuranceRuntime.Money(policy.EnrollmentCost) + " SC  |  " +
+                            "VALUE " + InsuranceRuntime.Money(policy.ShipValue) + " SC  |  " +
                             policy.GridName + "  |  " +
                             policy.DistanceMeters.ToString("0", CultureInfo.InvariantCulture) + " m" +
                             EconomyPriceLabel(policy)
@@ -244,6 +245,7 @@ namespace ShipInsurance
                     Key = choice,
                     PolicyId = policy.PolicyId,
                     Label = "POLICY #" + policy.PolicyId + "  |  " + price + "  |  " +
+                        "VALUE " + InsuranceRuntime.Money(policy.ShipValue) + " SC  |  " +
                         policy.GridName + "  |  " + state.ToUpperInvariant() +
                         EconomyPriceLabel(policy)
                 });

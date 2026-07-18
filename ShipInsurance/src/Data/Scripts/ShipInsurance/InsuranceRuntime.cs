@@ -172,6 +172,7 @@ namespace ShipInsurance
                     ClaimCost = quote.Cost,
                     Recovery = quote.Recovery,
                     TransportCost = transportCost,
+                    ShipValue = quote.BaselineValue,
                     LossRatio = quote.LossRatio,
                     FactionTag = quote.FactionTag,
                     FactionReputation = quote.FactionReputation,
@@ -246,6 +247,7 @@ namespace ShipInsurance
                         ? anchor.DisplayName
                         : anchor.CustomName,
                     SelectionGridId = anchor.EntityId,
+                    ShipValue = baselineValue,
                     EnrollmentCost = InsuranceMath.EnrollmentFee(baselineValue,
                         _config.EnrollmentFlatFee, _config.EnrollmentValueFraction,
                         pricing.Discount),

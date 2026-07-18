@@ -156,6 +156,7 @@ namespace ShipInsurance
         [ProtoMember(21)] public bool DynamicRecoveryPrice;
         [ProtoMember(22)] public bool RecoveryPriceLocked;
         [ProtoMember(23)] public long InsuranceCooldownReadyUtcTicks;
+        [ProtoMember(24)] public long ShipValue;
     }
 
     internal sealed class ClaimQuote
