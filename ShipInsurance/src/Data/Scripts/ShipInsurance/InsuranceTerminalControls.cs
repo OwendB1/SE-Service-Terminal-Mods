@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using Sandbox.ModAPI;
-using Sandbox.ModAPI.Interfaces.Terminal;
 using VRage.Game;
 using VRage.Game.ModAPI;
-using VRage.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace ShipInsurance
@@ -23,7 +20,6 @@ namespace ShipInsurance
     internal sealed class InsuranceTerminalControls
     {
         private readonly InsuranceCommands _commands;
-        private readonly List<IMyTerminalControl> _serviceTerminalControls = new List<IMyTerminalControl>();
         private readonly List<PolicySummary> _servicePolicies = new List<PolicySummary>();
         private readonly Dictionary<long, long> _serviceChoicePolicies = new Dictionary<long, long>();
         private readonly Dictionary<long, long> _serviceChoiceGrids = new Dictionary<long, long>();
@@ -32,9 +28,6 @@ namespace ShipInsurance
         private long _selectedServiceChoice;
         private long _servicePolicyTerminalId;
         private long _lastServicePolicyRequestTicks;
-        private IMyTerminalControlCombobox _serviceGridSelector;
-        private IMyTerminalControlButton _serviceExpediteButton;
-        private bool _serviceTerminalControlsRegistered;
 
         internal event Action ServiceChoicesChanged;
         internal event Action<ClaimLedger> LedgerReceived;
@@ -48,133 +41,13 @@ namespace ShipInsurance
             _commands.LedgerReceived += ApplyLedger;
         }
 
-        internal void Register()
-        {
-            if (_serviceTerminalControlsRegistered || MyAPIGateway.TerminalControls == null) return;
-
-            IMyTerminalControlSeparator separator =
-                MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSeparator, IMyFunctionalBlock>(
-                    "ShipInsurance_Separator");
-            AddServiceTerminalControl(separator);
-
-            IMyTerminalControlLabel label =
-                MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyFunctionalBlock>(
-                    "ShipInsurance_Label");
-            label.Label = MyStringId.GetOrCompute("Ship Insurance");
-            AddServiceTerminalControl(label);
-
-            _serviceGridSelector =
-                MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyFunctionalBlock>(
-                    "ShipInsurance_Grid");
-            _serviceGridSelector.Title = MyStringId.GetOrCompute("Insurance target");
-            _serviceGridSelector.Tooltip = MyStringId.GetOrCompute(
-                "Select an existing policy or a nearby uninsured mechanical group.");
-            _serviceGridSelector.ComboBoxContent = FillServiceChoices;
-            _serviceGridSelector.Getter = GetSelectedServiceChoice;
-            _serviceGridSelector.Setter = SetSelectedServiceChoice;
-            _serviceGridSelector.Enabled = CanAccessServiceTerminal;
-            AddServiceTerminalControl(_serviceGridSelector);
-
-            IMyTerminalControlButton refresh = CreateServiceButton("Refresh", "Refresh insurance targets",
-                "Refresh policies and rescan nearby uninsured groups.", RefreshServiceChoices);
-            refresh.Enabled = CanAccessServiceTerminal;
-            AddServiceTerminalControl(refresh);
-            IMyTerminalControlButton status = CreateServiceButton("Status", "Policy status / quote",
-                "Show loss, claim price, and any remote recovery countdown or expedite quote.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "status");
-                });
-            status.Enabled = CanUseSelectedPolicy;
-            AddServiceTerminalControl(status);
-            IMyTerminalControlButton insure = CreateServiceButton("Insure", "Insure snapshot",
-                "Pay enrollment and snapshot the selected mechanical group as its truth state.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "insure");
-                });
-            insure.Enabled = CanUseSelectedGroup;
-            AddServiceTerminalControl(insure);
-            IMyTerminalControlButton claim = CreateServiceButton("Claim", "Claim / recover",
-                "Repair locally, order remote recovery, or deploy an arrived recovery.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "claim");
-                });
-            claim.Enabled = CanUseSelectedPolicy;
-            AddServiceTerminalControl(claim);
-            _serviceExpediteButton = CreateServiceButton("Expedite", "Expedite remote recovery",
-                "Select an en-route recovery to see its current expedite price.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "expedite");
-                });
-            _serviceExpediteButton.Enabled = CanExpediteSelectedPolicy;
-            AddServiceTerminalControl(_serviceExpediteButton);
-            IMyTerminalControlButton history = CreateServiceButton("History", "Damage history",
-                "Show recent damage/removal attribution for selected group.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "history");
-                });
-            history.Enabled = CanUseSelectedPolicy;
-            AddServiceTerminalControl(history);
-            IMyTerminalControlButton cancel = CreateServiceButton("Cancel", "Cancel selected policy",
-                "Cancel selected group's policy without an enrollment refund.", delegate(IMyTerminalBlock block)
-                {
-                    SendServiceTerminalCommand(block, "cancel");
-                });
-            cancel.Enabled = CanUseSelectedPolicy;
-            AddServiceTerminalControl(cancel);
-
-            _serviceTerminalControlsRegistered = true;
-        }
-
-        private void AddServiceTerminalControl(IMyTerminalControl control)
-        {
-            control.SupportsMultipleBlocks = false;
-            control.Visible = InsuranceRuntime.IsServicesTerminal;
-            MyAPIGateway.TerminalControls.AddControl<IMyFunctionalBlock>(control);
-            _serviceTerminalControls.Add(control);
-        }
-
-        private IMyTerminalControlButton CreateServiceButton(string id, string title, string tooltip,
-            Action<IMyTerminalBlock> action)
-        {
-            IMyTerminalControlButton button =
-                MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyFunctionalBlock>(
-                    "ShipInsurance_" + id);
-            button.Title = MyStringId.GetOrCompute(title);
-            button.Tooltip = MyStringId.GetOrCompute(tooltip);
-            button.Action = action;
-            button.Enabled = CanAccessServiceTerminal;
-            return button;
-        }
-
         internal void Stop()
         {
             _commands.PolicyListReceived -= ApplyServicePolicyList;
             _commands.LedgerReceived -= ApplyLedger;
-            if (!_serviceTerminalControlsRegistered || MyAPIGateway.TerminalControls == null) return;
-
-            for (int i = 0; i < _serviceTerminalControls.Count; i++)
-                MyAPIGateway.TerminalControls.RemoveControl<IMyFunctionalBlock>(_serviceTerminalControls[i]);
-
-            _serviceTerminalControls.Clear();
             _servicePolicies.Clear();
             _serviceChoicePolicies.Clear();
             _serviceChoiceGrids.Clear();
-            _serviceGridSelector = null;
-            _serviceExpediteButton = null;
-            _serviceTerminalControlsRegistered = false;
-        }
-
-        private void FillServiceChoices(List<MyTerminalControlComboBoxItem> items)
-        {
-            List<InsuranceServiceChoice> choices = RebuildServiceChoices();
-            for (int i = 0; i < choices.Count; i++)
-            {
-                items.Add(new MyTerminalControlComboBoxItem
-                {
-                    Key = choices[i].Key,
-                    Value = MyStringId.GetOrCompute(choices[i].Label)
-                });
-            }
         }
 
         private long GetSelectedServiceChoice(IMyTerminalBlock block)
@@ -190,7 +63,6 @@ namespace ShipInsurance
             long value;
             _selectedPolicyId = _serviceChoicePolicies.TryGetValue(choice, out value) ? value : 0;
             _selectedServiceGridId = _serviceChoiceGrids.TryGetValue(choice, out value) ? value : 0;
-            UpdateExpeditePresentation();
         }
 
         private List<InsuranceServiceChoice> RebuildServiceChoices()
@@ -361,13 +233,6 @@ namespace ShipInsurance
             }
         }
 
-        private bool CanUseSelectedGroup(IMyTerminalBlock block)
-        {
-            if (!CanAccessServiceTerminal(block)) return false;
-            GetSelectedServiceChoice(block);
-            return _selectedServiceGridId != 0;
-        }
-
         private bool CanUseSelectedPolicy(IMyTerminalBlock block)
         {
             if (!CanAccessServiceTerminal(block)) return false;
@@ -391,26 +256,6 @@ namespace ShipInsurance
             return null;
         }
 
-        private void UpdateExpeditePresentation()
-        {
-            if (_serviceExpediteButton == null) return;
-            PolicySummary policy = FindSelectedServicePolicy();
-            if (policy != null && policy.RecoveryReadyUtcTicks > DateTime.UtcNow.Ticks &&
-                policy.RecoveryTerminalEntityId == _servicePolicyTerminalId &&
-                !policy.RecoveryExpedited && policy.ExpediteReductionPercent > 0)
-            {
-                _serviceExpediteButton.Tooltip = MyStringId.GetOrCompute("Pay " +
-                    InsuranceRuntime.Money(policy.ExpeditePrice) +
-                    " SC to reduce current remaining time by " +
-                    policy.ExpediteReductionPercent + "% (one use per recovery).");
-            }
-            else
-            {
-                _serviceExpediteButton.Tooltip = MyStringId.GetOrCompute(
-                    "Available once while a remote recovery is en route from this terminal.");
-            }
-        }
-
         private bool CanAccessServiceTerminal(IMyTerminalBlock block)
         {
             IMyPlayer player = MyAPIGateway.Session == null ? null : MyAPIGateway.Session.Player;
@@ -422,17 +267,6 @@ namespace ShipInsurance
                 InsuranceRuntime.ServiceTerminalUseDistance *
                 InsuranceRuntime.ServiceTerminalUseDistance) return false;
             return true;
-        }
-
-        private void RefreshServiceChoices(IMyTerminalBlock block)
-        {
-            _lastServicePolicyRequestTicks = 0;
-            RequestServicePolicyList(block, true);
-            if (_serviceGridSelector != null)
-            {
-                _serviceGridSelector.RedrawControl();
-                _serviceGridSelector.UpdateVisual();
-            }
         }
 
         private void RequestServicePolicyList(IMyTerminalBlock terminal, bool force)
@@ -482,12 +316,6 @@ namespace ShipInsurance
                 _selectedServiceChoice = 0;
             }
 
-            if (_serviceGridSelector != null)
-            {
-                _serviceGridSelector.RedrawControl();
-                _serviceGridSelector.UpdateVisual();
-            }
-            UpdateExpeditePresentation();
             if (ServiceChoicesChanged != null) ServiceChoicesChanged();
         }
 

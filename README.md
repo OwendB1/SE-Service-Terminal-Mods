@@ -21,7 +21,7 @@ Using an Economy 2 Services Terminal opens the framework's centered provider men
 
 ## Client dependency
 
-[Service Terminal Framework](ServiceTerminalFramework/README.md) and [Rich HUD Master](https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081) must be enabled to expose Ship Insurance from the physical Services detector. If Rich HUD is unavailable, the retained vanilla Services interaction still opens normally. The secondary control-panel action also remains available.
+[Service Terminal Framework](ServiceTerminalFramework/README.md) and [Rich HUD Master](https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081) must be enabled to expose Ship Insurance from the physical Services detector. If Rich HUD is unavailable, the retained vanilla Services interaction still opens normally, but the Ship Insurance interface is unavailable.
 
 Snapshot inventories, construction stockpiles, ammunition, fuel, battery charge, and similar consumables are cleared through Space Engineers' projector sanitizer. Claims restore blocks and integrity, not cargo. Blocks added after enrollment remain untouched.
 
@@ -134,7 +134,7 @@ One policy follows the mechanically linked group captured at enrollment. Later a
 - `ServiceTerminalFramework` - standalone framework mod, provider API, detector proxy, and responsive Rich HUD side navigation.
 - `ShipInsurance/ShipInsurance.csproj` - .NET Framework 4.8, C# 6, x64 MDK2 project.
 - `ShipInsurance/src` - Space Engineers mod payload uploaded to Steam Workshop.
-- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, framework client, command transport, runtime mechanics, terminal controls, unified Rich HUD window, persistence, and pricing classes.
+- `ShipInsurance/src/Data/Scripts/ShipInsurance` - separate session lifecycle, framework client, command transport, runtime mechanics, Rich HUD service state and window, persistence, and pricing classes.
 - `ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework` - MIT-licensed Rich HUD Framework client sources used by the custom interactive window; its license is included in that directory.
 - `ServiceTerminalFrameworkClient.cs` registers Ship Insurance through the framework's load-order-safe mod-message API.
 - `ShipInsurance/src/Models` and `tools/ServiceTerminalModelPatcher` contain the previous split-model experiment for comparison; runtime code no longer loads those assets.

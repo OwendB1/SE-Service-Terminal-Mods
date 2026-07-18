@@ -26,7 +26,6 @@ namespace ShipInsurance
             if (!MyAPIGateway.Utilities.IsDedicated)
             {
                 _terminalControls = new InsuranceTerminalControls(_commands);
-                _terminalControls.Register();
                 _richHud = new InsuranceRichHud(_terminalControls);
                 _richHud.Start();
                 _frameworkClient = new ServiceTerminalFrameworkClient();
