@@ -1,4 +1,0 @@
-/home/owendb/Documents/GitHub/SE-Ship-Insurance/.github/workflows/steam-workshop-upload.yml
-/home/owendb/Documents/GitHub/SE-Ship-Insurance/README.md
-/home/owendb/Documents/GitHub/SE-Ship-Insurance/ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/README.md
-/home/owendb/Documents/GitHub/SE-Ship-Insurance/ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/README.md

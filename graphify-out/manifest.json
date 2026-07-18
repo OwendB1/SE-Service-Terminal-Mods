@@ -1,0 +1,1512 @@
+{
+  "ServiceTerminalFramework/ServiceTerminalFramework.csproj": {
+    "mtime": 1784130505.2360713,
+    "ast_hash": "7b93cdd6d7afc910ec67bb2119067905",
+    "semantic_hash": "7b93cdd6d7afc910ec67bb2119067905"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/FrameworkApi.cs": {
+    "mtime": 1784143171.9131813,
+    "ast_hash": "7253116759804a606fedb570fac28297",
+    "semantic_hash": "7253116759804a606fedb570fac28297"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/FrameworkSession.cs": {
+    "mtime": 1784130505.2379198,
+    "ast_hash": "a89da77bf39589477932d2fa629a322a",
+    "semantic_hash": "a89da77bf39589477932d2fa629a322a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/RichHudClient.cs": {
+    "mtime": 1768158799.658601,
+    "ast_hash": "eb63c6b0bc538c153fd5ca443be4346c",
+    "semantic_hash": "eb63c6b0bc538c153fd5ca443be4346c"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/BindManager/Bind.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "e8a722963c2865c1926bd5907e08d124",
+    "semantic_hash": "e8a722963c2865c1926bd5907e08d124"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/BindManager/BindGroup.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "029961fd58fab94c0ab4f7ff10c366f5",
+    "semantic_hash": "029961fd58fab94c0ab4f7ff10c366f5"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/BindManager/BindManager.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "d731f03889f7fa0e0832885e8b04728e",
+    "semantic_hash": "d731f03889f7fa0e0832885e8b04728e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/BindManager/Control.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "d59aa566853e82cfdfa434abe73cfbc2",
+    "semantic_hash": "d59aa566853e82cfdfa434abe73cfbc2"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/HudCursor.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "5c85f91572072f5424cf27be8552528e",
+    "semantic_hash": "5c85f91572072f5424cf27be8552528e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/HudMain.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "6d434c39f71fd5ed9002300d16f50a0e",
+    "semantic_hash": "6d434c39f71fd5ed9002300d16f50a0e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/Rendering/BillboardUtils.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "c28f845da8b6732bdbef709ee1cf0e9a",
+    "semantic_hash": "c28f845da8b6732bdbef709ee1cf0e9a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/Rendering/FontManager/FontData.cs": {
+    "mtime": 1768158800.7482913,
+    "ast_hash": "fbdc1b0c1e16b57d5a08202cb441676a",
+    "semantic_hash": "fbdc1b0c1e16b57d5a08202cb441676a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/Rendering/FontManager/FontManager.cs": {
+    "mtime": 1768158800.550295,
+    "ast_hash": "bffab01f836888e2b811e07f80454107",
+    "semantic_hash": "bffab01f836888e2b811e07f80454107"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/Rendering/TextBoard.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "acf828bd5ce76a843909d758ac1b81e3",
+    "semantic_hash": "acf828bd5ce76a843909d758ac1b81e3"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Client/UI/HUD/Rendering/TextBuilder.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "1928a90e35c84851772a931ee2324fda",
+    "semantic_hash": "1928a90e35c84851772a931ee2324fda"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/RichHudClient.csproj": {
+    "mtime": 1768158805.236207,
+    "ast_hash": "7629b74631d120adb3a0bf8b19f3f5b0",
+    "semantic_hash": "7629b74631d120adb3a0bf8b19f3f5b0"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/APIVersionIDTable.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "8418bc0fc205485fcba7109bc2ee598b",
+    "semantic_hash": "8418bc0fc205485fcba7109bc2ee598b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/ApiContainers.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "9fc58720347abdda90abdc8f807f1e75",
+    "semantic_hash": "9fc58720347abdda90abdc8f807f1e75"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Collections.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "31f276f8acc0ac652b44b5ae03935294",
+    "semantic_hash": "31f276f8acc0ac652b44b5ae03935294"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Extensions/CollectionExtensions.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "1d434b2c4d7b6496cb73e188c85c93d1",
+    "semantic_hash": "1d434b2c4d7b6496cb73e188c85c93d1"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Extensions/MathExtensions.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "6375b89d85e22632a20b0ea7ffa33103",
+    "semantic_hash": "6375b89d85e22632a20b0ea7ffa33103"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Extensions/VectorExtensions.cs": {
+    "mtime": 1768158799.364125,
+    "ast_hash": "3d6da643e770cb9700cf2a017710446d",
+    "semantic_hash": "3d6da643e770cb9700cf2a017710446d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/ObjectPool.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "e0f513831174d2012e076e0f8c0ab4a7",
+    "semantic_hash": "e0f513831174d2012e076e0f8c0ab4a7"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/PoolPolicies/ListPoolPolicy.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "4fe38c5268c68052bafb817dceab2bd8",
+    "semantic_hash": "4fe38c5268c68052bafb817dceab2bd8"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/PoolPolicies/StringBuilderPoolPolicy.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "45bbbb1cbec03f9c476ce796c5487853",
+    "semantic_hash": "45bbbb1cbec03f9c476ce796c5487853"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/TaskPool.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "0d039ee5a205fc5b2f537d94c74c2aa2",
+    "semantic_hash": "0d039ee5a205fc5b2f537d94c74c2aa2"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Utilities/Color.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "c51a654d5f3ccaef545b3dbebb4e8499",
+    "semantic_hash": "c51a654d5f3ccaef545b3dbebb4e8499"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Utilities/Debug.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "db2a63afb9d5f2071c50f3547c8a69b6",
+    "semantic_hash": "db2a63afb9d5f2071c50f3547c8a69b6"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Utilities/Math.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "6542c90dec2d06fcb365771d474e5eff",
+    "semantic_hash": "6542c90dec2d06fcb365771d474e5eff"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Utilities/ProtoBuf.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "84962922f5a884244fb061f642fd05ba",
+    "semantic_hash": "84962922f5a884244fb061f642fd05ba"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/General/Utilities/Xml.cs": {
+    "mtime": 1768158799.75731,
+    "ast_hash": "99e02446de42ce3616b905b6c3850644",
+    "semantic_hash": "99e02446de42ce3616b905b6c3850644"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/IO/LocalFileIO.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "ec81af808ae99a937cf5433fa08bc83c",
+    "semantic_hash": "ec81af808ae99a937cf5433fa08bc83c"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/IO/ReadOnlyModFileIO.cs": {
+    "mtime": 1768158799.4623604,
+    "ast_hash": "f3614d2489797a7e9d3883739eed0c94",
+    "semantic_hash": "f3614d2489797a7e9d3883739eed0c94"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/Internal/ExceptionHandler.cs": {
+    "mtime": 1768158799.5593135,
+    "ast_hash": "e990d97449a51e42bea7e9988c98a55e",
+    "semantic_hash": "e990d97449a51e42bea7e9988c98a55e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/Internal/ModBase.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "6e63cdbfb97eeee1f766ef908a3772fc",
+    "semantic_hash": "6e63cdbfb97eeee1f766ef908a3772fc"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/Internal/RichHudCore.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "51c4c13e2bb3a71ef25cf2b74718e0df",
+    "semantic_hash": "51c4c13e2bb3a71ef25cf2b74718e0df"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/MsgEnums.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "d8edea57bc17a6775d27e058039cda45",
+    "semantic_hash": "d8edea57bc17a6775d27e058039cda45"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/BindClientAccessors.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "54fccf56e1f682ed056293668f30304b",
+    "semantic_hash": "54fccf56e1f682ed056293668f30304b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/BindDefinition.cs": {
+    "mtime": 1768158799.5606396,
+    "ast_hash": "1b763f338b5f98e2be7ae993dd97248b",
+    "semantic_hash": "1b763f338b5f98e2be7ae993dd97248b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/BindGroupInitializer.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "8130579c69f36b6ab829a16023757660",
+    "semantic_hash": "8130579c69f36b6ab829a16023757660"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/ControlHandle.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "03520b2e20587eeeefef5ed432375d2d",
+    "semantic_hash": "03520b2e20587eeeefef5ed432375d2d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/CustomControls.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "1d901f66bb34b1562d9832c2b837e667",
+    "semantic_hash": "1d901f66bb34b1562d9832c2b837e667"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/IBind.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "511f641eb387b43b69f4a704418b8488",
+    "semantic_hash": "511f641eb387b43b69f4a704418b8488"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/IBindGroup.cs": {
+    "mtime": 1768158799.4625003,
+    "ast_hash": "889c0cee00bc6ec69d38d89857f401e9",
+    "semantic_hash": "889c0cee00bc6ec69d38d89857f401e9"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/BindManager/IControl.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "dc3884e2d0dbd3fb73b15812afb33d7d",
+    "semantic_hash": "dc3884e2d0dbd3fb73b15812afb33d7d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/HudElementBase.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "325ead7baad38fc4a7c6eec9bce4d46c",
+    "semantic_hash": "325ead7baad38fc4a7c6eec9bce4d46c"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/HudNodeBase.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "6f955db3cd9d08eeffe3e19fd659351f",
+    "semantic_hash": "6f955db3cd9d08eeffe3e19fd659351f"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/HudNodeData.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "f7865308dde94a27c151ca7e1588d4b0",
+    "semantic_hash": "f7865308dde94a27c151ca7e1588d4b0"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/HudParentBase.cs": {
+    "mtime": 1768158800.650293,
+    "ast_hash": "85c601973834398b2ba177b6314b15b1",
+    "semantic_hash": "85c601973834398b2ba177b6314b15b1"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/HudSpaceNodeBase.cs": {
+    "mtime": 1768158799.5606396,
+    "ast_hash": "bf9556668dca3f44be0484296c45155c",
+    "semantic_hash": "bf9556668dca3f44be0484296c45155c"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/LabelBoxBase.cs": {
+    "mtime": 1768158799.5593135,
+    "ast_hash": "b3d77327bd5ff2f0e0f8b16445a4b2ee",
+    "semantic_hash": "b3d77327bd5ff2f0e0f8b16445a4b2ee"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/LabelElementBase.cs": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "94343123b3b7f3f2df8a8ad6f47b2137",
+    "semantic_hash": "94343123b3b7f3f2df8a8ad6f47b2137"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/NodeUtils.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "db1fed7761b4493444f4115c453e29cd",
+    "semantic_hash": "db1fed7761b4493444f4115c453e29cd"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/ParentUtils.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "be32499b377335bb9e53d75f08d09b5a",
+    "semantic_hash": "be32499b377335bb9e53d75f08d09b5a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementBases/WindowBase.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "66cefbb503908cc7b93d4489fc57913d",
+    "semantic_hash": "66cefbb503908cc7b93d4489fc57913d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementEnums.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "0d02634b0d224a29af21b128e9d135d4",
+    "semantic_hash": "0d02634b0d224a29af21b128e9d135d4"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IEntryBox.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "f8b6342e0787e4617e32ae462feb7b2a",
+    "semantic_hash": "f8b6342e0787e4617e32ae462feb7b2a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IHudCollection.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "ddd39399fe4739159fa2259377c83285",
+    "semantic_hash": "ddd39399fe4739159fa2259377c83285"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/ILabelElement.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "b0fe13506c6e26e4528ebd77160ef36d",
+    "semantic_hash": "b0fe13506c6e26e4528ebd77160ef36d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudElement.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "f23175de2b7d4dacfb2b51aaaa18ec82",
+    "semantic_hash": "f23175de2b7d4dacfb2b51aaaa18ec82"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudNode.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "c936438d9cdc3be3934ad3e49826504e",
+    "semantic_hash": "c936438d9cdc3be3934ad3e49826504e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudParent.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "41cf13f8636984289f4024a00ee16d34",
+    "semantic_hash": "41cf13f8636984289f4024a00ee16d34"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudSpaceNode.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "e0ae592aa9052f7dee99f823dfe6ff37",
+    "semantic_hash": "e0ae592aa9052f7dee99f823dfe6ff37"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IValueControl.cs": {
+    "mtime": 1768158800.4512968,
+    "ast_hash": "bae9381d014f715211f88c3537b1bc6e",
+    "semantic_hash": "bae9381d014f715211f88c3537b1bc6e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/BorderBox.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "a5207c2b0f0cc841dbad1d5893669690",
+    "semantic_hash": "a5207c2b0f0cc841dbad1d5893669690"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/BorderedButton.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "0687db50c391705901c5c8399b851cc0",
+    "semantic_hash": "0687db50c391705901c5c8399b851cc0"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/BorderedCheckBox.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "aa6bed3bdcbe4bce9d666b1fbe1feddb",
+    "semantic_hash": "aa6bed3bdcbe4bce9d666b1fbe1feddb"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/Button.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "275d3f4a4dfbc2217a8ca4ffab7eee0b",
+    "semantic_hash": "275d3f4a4dfbc2217a8ca4ffab7eee0b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/LabelBoxButton.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "a717f36472c0f2a43b6a616f3a2c7cfd",
+    "semantic_hash": "a717f36472c0f2a43b6a616f3a2c7cfd"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/LabelButton.cs": {
+    "mtime": 1768158800.650293,
+    "ast_hash": "f4f7ad2f16f1d143d90fef492fe8dcd6",
+    "semantic_hash": "f4f7ad2f16f1d143d90fef492fe8dcd6"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/NamedCheckBox.cs": {
+    "mtime": 1768158800.155324,
+    "ast_hash": "856cc999d6de66ff89a904dbcb3a3068",
+    "semantic_hash": "856cc999d6de66ff89a904dbcb3a3068"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/NamedOnOffButton.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "1694246bf578d1fafa16faa6bd1dee98",
+    "semantic_hash": "1694246bf578d1fafa16faa6bd1dee98"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/OnOffButton.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "8485bac63303abb9a1611a72eba4e60f",
+    "semantic_hash": "8485bac63303abb9a1611a72eba4e60f"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ColorPickerHSV.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "85c44169b74720542005c550fa5e8943",
+    "semantic_hash": "85c44169b74720542005c550fa5e8943"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ColorPickerRGB.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "e7f3adefe8ec7d332c66e551056ad778",
+    "semantic_hash": "e7f3adefe8ec7d332c66e551056ad778"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ScrollBox.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "91125072bba77fd5f6a0358ce238e943",
+    "semantic_hash": "91125072bba77fd5f6a0358ce238e943"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/Dropdown.cs": {
+    "mtime": 1768158799.6589644,
+    "ast_hash": "d0649daddbb02f9aa98affec84139f80",
+    "semantic_hash": "d0649daddbb02f9aa98affec84139f80"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/ListBox.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "8c22709faa43cfc1af5b10a02d347c4e",
+    "semantic_hash": "8c22709faa43cfc1af5b10a02d347c4e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/RadialSelectionBox.cs": {
+    "mtime": 1768158799.8585064,
+    "ast_hash": "6314a57167c9ce71b9f03b0299d9beb7",
+    "semantic_hash": "6314a57167c9ce71b9f03b0299d9beb7"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/SelectionBox.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "8ab15014a20ead07bd36f58ba2702458",
+    "semantic_hash": "8ab15014a20ead07bd36f58ba2702458"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/SelectionBoxBase.cs": {
+    "mtime": 1768158800.2543938,
+    "ast_hash": "d3cbfcd3cbae91256a5ba9188387d2db",
+    "semantic_hash": "d3cbfcd3cbae91256a5ba9188387d2db"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeBox.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "7a9fede11f2275596b9c68a7868ef8fc",
+    "semantic_hash": "7a9fede11f2275596b9c68a7868ef8fc"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeBoxBase.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "c3acd76b496780e72f57993ec8a44498",
+    "semantic_hash": "c3acd76b496780e72f57993ec8a44498"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeList.cs": {
+    "mtime": 1768158799.8586025,
+    "ast_hash": "8af206f6361c3f3866301e7ed0afb223",
+    "semantic_hash": "8af206f6361c3f3866301e7ed0afb223"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/NamedSliderBox.cs": {
+    "mtime": 1768158800.2543938,
+    "ast_hash": "db3591ede345c5b45f7f33f352babc72",
+    "semantic_hash": "db3591ede345c5b45f7f33f352babc72"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/ScrollBar.cs": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "f448bff1e365e912ad94c7589f8c9cd7",
+    "semantic_hash": "f448bff1e365e912ad94c7589f8c9cd7"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/SliderBar.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "85947a61228a1a7a878ad458cd99e65e",
+    "semantic_hash": "85947a61228a1a7a878ad458cd99e65e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/SliderBox.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "6e5c1f0ce32f3c87c739cd70dbcc96c4",
+    "semantic_hash": "6e5c1f0ce32f3c87c739cd70dbcc96c4"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/TextBox.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "d72473e4fdb5c9eadc3d7355756e7cbf",
+    "semantic_hash": "d72473e4fdb5c9eadc3d7355756e7cbf"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/TextField.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "223a2b6bdf752bc82ed4a2649cb16676",
+    "semantic_hash": "223a2b6bdf752bc82ed4a2649cb16676"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IHudNodeContainer.cs": {
+    "mtime": 1768158799.364125,
+    "ast_hash": "0a9e536edb7c149bc55696c12eb0549f",
+    "semantic_hash": "0a9e536edb7c149bc55696c12eb0549f"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IListBoxEntry.cs": {
+    "mtime": 1768158799.5608706,
+    "ast_hash": "354998c18bd0ff9d52b445be44fe48f5",
+    "semantic_hash": "354998c18bd0ff9d52b445be44fe48f5"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IScrollBoxEntry.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "116b6f3a353f85ae49276b0530ea7332",
+    "semantic_hash": "116b6f3a353f85ae49276b0530ea7332"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/ISelectionBoxEntry.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "6f8d94619936f4b786256f95838e8bf8",
+    "semantic_hash": "6f8d94619936f4b786256f95838e8bf8"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/HudElementContainer.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "9573369e69f6dad9cea422c0f1974ab0",
+    "semantic_hash": "9573369e69f6dad9cea422c0f1974ab0"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/HudElementTuple.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "02062b73515cf9080fc8647b2cb75949",
+    "semantic_hash": "02062b73515cf9080fc8647b2cb75949"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ListBoxEntry.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "eb3ac7e631bc9b892d3ed74589e367f3",
+    "semantic_hash": "eb3ac7e631bc9b892d3ed74589e367f3"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ScrollBoxEntry.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "09a391481a7a7dabe7da961e620c4345",
+    "semantic_hash": "09a391481a7a7dabe7da961e620c4345"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ScrollBoxEntryTuple.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "3bf436db0eaf4e9b1aa36c185bddb972",
+    "semantic_hash": "3bf436db0eaf4e9b1aa36c185bddb972"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Containers/SelectionBoxEntry.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "af955d190e78e922f2e089310f830f2b",
+    "semantic_hash": "af955d190e78e922f2e089310f830f2b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/DoubleLabelBox.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "62b64ed95d10a9dd09db5cd1f35ad6af",
+    "semantic_hash": "62b64ed95d10a9dd09db5cd1f35ad6af"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/EmptyHudElement.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "68dbf177f53ce01ff83b0d910bc015c0",
+    "semantic_hash": "68dbf177f53ce01ff83b0d910bc015c0"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/HudChain.cs": {
+    "mtime": 1768158799.6589644,
+    "ast_hash": "123f1c3c5297184ed5497ddc59f801c5",
+    "semantic_hash": "123f1c3c5297184ed5497ddc59f801c5"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/HudCollection.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "ada89d3146140a20c3791caad3cd8e1e",
+    "semantic_hash": "ada89d3146140a20c3791caad3cd8e1e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/BindInputElement.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "b4ef111889792b3b5ac08b45f9ce35ca",
+    "semantic_hash": "b4ef111889792b3b5ac08b45f9ce35ca"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IBindInput.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "5e97e1ae90d57bc50082686f798e4edd",
+    "semantic_hash": "5e97e1ae90d57bc50082686f798e4edd"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IClickableElement.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "17d54d2b42d476fd6d7bb3fbdb898810",
+    "semantic_hash": "17d54d2b42d476fd6d7bb3fbdb898810"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IFocusHandler.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "2f1b8bb103046a3ee49d178e58ccef74",
+    "semantic_hash": "2f1b8bb103046a3ee49d178e58ccef74"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/InputFocusHandler.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "d7f19bb2d1911d8ccdf15324ebe510d5",
+    "semantic_hash": "d7f19bb2d1911d8ccdf15324ebe510d5"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/ListInputElement.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "220252a11c004ea672a62910d947f38a",
+    "semantic_hash": "220252a11c004ea672a62910d947f38a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/MouseInputElement.cs": {
+    "mtime": 1768158800.4527702,
+    "ast_hash": "aaceb8814cf6b311821ea5e375554f8a",
+    "semantic_hash": "aaceb8814cf6b311821ea5e375554f8a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/Label.cs": {
+    "mtime": 1768158800.4512968,
+    "ast_hash": "5bd4a6eb4ac5b604a73665798cbf9bfc",
+    "semantic_hash": "5bd4a6eb4ac5b604a73665798cbf9bfc"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/LabelBox.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "ec538928f6f77654288382bc03f8e6b2",
+    "semantic_hash": "ec538928f6f77654288382bc03f8e6b2"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudElements/TexturedBox.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "3104af3824904d1f806b5c88bffc6a39",
+    "semantic_hash": "3104af3824904d1f806b5c88bffc6a39"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudMainEnums.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "10baeb7c27028640873f5667a3c842a9",
+    "semantic_hash": "10baeb7c27028640873f5667a3c842a9"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/CamSpaceNode.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "78b2b170ec8da467a2cf901369343247",
+    "semantic_hash": "78b2b170ec8da467a2cf901369343247"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/CustomSpaceNode.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "1ec71ab03942952373f00d6c8620b97e",
+    "semantic_hash": "1ec71ab03942952373f00d6c8620b97e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/ScaledSpaceNode.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "5fb3786e00921005892951452f8687ae",
+    "semantic_hash": "5fb3786e00921005892951452f8687ae"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/ICursor.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "48cb620f55094d8330609a11336441c4",
+    "semantic_hash": "48cb620f55094d8330609a11336441c4"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/BillboardMats.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "9c244323636e78cd4e8ebf7302360317",
+    "semantic_hash": "9c244323636e78cd4e8ebf7302360317"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/BillboardUtils.cs": {
+    "mtime": 1768158799.8581429,
+    "ast_hash": "96ad7d58df6c5af08996289fd6cb2b74",
+    "semantic_hash": "96ad7d58df6c5af08996289fd6cb2b74"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/BlockBoard.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "fe61b49d080b324d21e8a18130220ea6",
+    "semantic_hash": "fe61b49d080b324d21e8a18130220ea6"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/IFontMin.cs": {
+    "mtime": 1768158799.9564652,
+    "ast_hash": "62752ebe6248bf44f65444d6cf84ea37",
+    "semantic_hash": "62752ebe6248bf44f65444d6cf84ea37"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/ITextBoard.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "1453ca23d6ad33dda82e8ebad8a43ccb",
+    "semantic_hash": "1453ca23d6ad33dda82e8ebad8a43ccb"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/MatBoard.cs": {
+    "mtime": 1768158799.8585064,
+    "ast_hash": "424f0d791329963610ccb2a4d5d1e7a6",
+    "semantic_hash": "424f0d791329963610ccb2a4d5d1e7a6"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/Material.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "564335fe5aed4d29c43145a42a9f496d",
+    "semantic_hash": "564335fe5aed4d29c43145a42a9f496d"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/MaterialFrame.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "bf86872538c6775438303c2217cf8b08",
+    "semantic_hash": "bf86872538c6775438303c2217cf8b08"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/PolyBoard.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "b549381239fcf881211a589847fa005b",
+    "semantic_hash": "b549381239fcf881211a589847fa005b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/PuncturedPolyBoard.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "d2d76ae2a99479af68ccac53d34690c2",
+    "semantic_hash": "d2d76ae2a99479af68ccac53d34690c2"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/QuadBoard.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "f31258edac79257362de4f9cb8270dfe",
+    "semantic_hash": "f31258edac79257362de4f9cb8270dfe"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/ILine.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "81715170f0ff493457c0bd8778b48eb9",
+    "semantic_hash": "81715170f0ff493457c0bd8778b48eb9"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/IRichChar.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "5e3d77da0b9e041e3744d2718ac2a814",
+    "semantic_hash": "5e3d77da0b9e041e3744d2718ac2a814"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/ITextBuilder.cs": {
+    "mtime": 1768158799.9564652,
+    "ast_hash": "debea33b39fabff6aeaeaae99cb03fd2",
+    "semantic_hash": "debea33b39fabff6aeaeaae99cb03fd2"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/RichText/GlyphFormat.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "03859e1151ace756a32fe139ca47547a",
+    "semantic_hash": "03859e1151ace756a32fe139ca47547a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/RichText/RichText.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "f2ddcea63a3df5f61f7d747b7309442b",
+    "semantic_hash": "f2ddcea63a3df5f61f7d747b7309442b"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/TerminalColors.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "16408d56b0b0dcf2f6efc361a903dbbf",
+    "semantic_hash": "16408d56b0b0dcf2f6efc361a903dbbf"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/HUD/ToolTip.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "5f0e62e6dc17b5b771a7b1b414ba3ede",
+    "semantic_hash": "5f0e62e6dc17b5b771a7b1b414ba3ede"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/SharedBinds.cs": {
+    "mtime": 1784126459.4299078,
+    "ast_hash": "3defe6e526a133fb71317df117ff259a",
+    "semantic_hash": "3defe6e526a133fb71317df117ff259a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/UI/TextInput.cs": {
+    "mtime": 1768158799.4625003,
+    "ast_hash": "7ea2736d81e0d233438e917d4fff754a",
+    "semantic_hash": "7ea2736d81e0d233438e917d4fff754a"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/ServicesMenuHud.cs": {
+    "mtime": 1784149018.5916655,
+    "ast_hash": "b58421867accd6a1e936c66c5f4c1756",
+    "semantic_hash": "b58421867accd6a1e936c66c5f4c1756"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/ServicesUseObject.cs": {
+    "mtime": 1784145795.2544768,
+    "ast_hash": "89efe3a1ae2f1ed28418a84d989a5e6e",
+    "semantic_hash": "89efe3a1ae2f1ed28418a84d989a5e6e"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/ServicesUseObjectManager.cs": {
+    "mtime": 1784131065.6743476,
+    "ast_hash": "8f36a892a038f6c7b25bdd3564afbac4",
+    "semantic_hash": "8f36a892a038f6c7b25bdd3564afbac4"
+  },
+  "ServiceTerminalMods.sln": {
+    "mtime": 1784130680.249347,
+    "ast_hash": "0a5bc7aec16195cb9cecf231e5a65fb3",
+    "semantic_hash": "0a5bc7aec16195cb9cecf231e5a65fb3"
+  },
+  "ShipInsurance/ShipInsurance.csproj": {
+    "mtime": 1784107629.8180056,
+    "ast_hash": "2be0256697fe0641b93efb5958e289ad",
+    "semantic_hash": "2be0256697fe0641b93efb5958e289ad"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceCommands.cs": {
+    "mtime": 1784389511.4823806,
+    "ast_hash": "42b4bad9ffc88842e394bc4b40881fc6",
+    "semantic_hash": "42b4bad9ffc88842e394bc4b40881fc6"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceMath.cs": {
+    "mtime": 1784382461.4225223,
+    "ast_hash": "635b2f6da3738945ba2e3891735840b4",
+    "semantic_hash": "635b2f6da3738945ba2e3891735840b4"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceModels.cs": {
+    "mtime": 1784389485.901802,
+    "ast_hash": "5ea0e79e307c97aeb633e63b452bb342",
+    "semantic_hash": "5ea0e79e307c97aeb633e63b452bb342"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceRichHud.cs": {
+    "mtime": 1784389639.193277,
+    "ast_hash": "b0de8fbcbfec95ddf3e90a7b6fb83b99",
+    "semantic_hash": "b0de8fbcbfec95ddf3e90a7b6fb83b99"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceRuntime.cs": {
+    "mtime": 1784389485.904802,
+    "ast_hash": "3d589132e2fabbf58dcb7aa6dc8932fb",
+    "semantic_hash": "3d589132e2fabbf58dcb7aa6dc8932fb"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceSession.cs": {
+    "mtime": 1784146393.3012288,
+    "ast_hash": "2c3343026cdee70dba1f0d13609c4245",
+    "semantic_hash": "2c3343026cdee70dba1f0d13609c4245"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceTerminalControls.cs": {
+    "mtime": 1784389511.4833806,
+    "ast_hash": "8e18deb3e9c144b52051045059918ed8",
+    "semantic_hash": "8e18deb3e9c144b52051045059918ed8"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/RichHudClient.cs": {
+    "mtime": 1768158799.658601,
+    "ast_hash": "eb63c6b0bc538c153fd5ca443be4346c",
+    "semantic_hash": "eb63c6b0bc538c153fd5ca443be4346c"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/BindManager/Bind.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "e8a722963c2865c1926bd5907e08d124",
+    "semantic_hash": "e8a722963c2865c1926bd5907e08d124"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/BindManager/BindGroup.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "029961fd58fab94c0ab4f7ff10c366f5",
+    "semantic_hash": "029961fd58fab94c0ab4f7ff10c366f5"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/BindManager/BindManager.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "d731f03889f7fa0e0832885e8b04728e",
+    "semantic_hash": "d731f03889f7fa0e0832885e8b04728e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/BindManager/Control.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "d59aa566853e82cfdfa434abe73cfbc2",
+    "semantic_hash": "d59aa566853e82cfdfa434abe73cfbc2"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/HudCursor.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "5c85f91572072f5424cf27be8552528e",
+    "semantic_hash": "5c85f91572072f5424cf27be8552528e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/HudMain.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "6d434c39f71fd5ed9002300d16f50a0e",
+    "semantic_hash": "6d434c39f71fd5ed9002300d16f50a0e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/Rendering/BillboardUtils.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "c28f845da8b6732bdbef709ee1cf0e9a",
+    "semantic_hash": "c28f845da8b6732bdbef709ee1cf0e9a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/Rendering/FontManager/FontData.cs": {
+    "mtime": 1768158800.7482913,
+    "ast_hash": "fbdc1b0c1e16b57d5a08202cb441676a",
+    "semantic_hash": "fbdc1b0c1e16b57d5a08202cb441676a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/Rendering/FontManager/FontManager.cs": {
+    "mtime": 1768158800.550295,
+    "ast_hash": "bffab01f836888e2b811e07f80454107",
+    "semantic_hash": "bffab01f836888e2b811e07f80454107"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/Rendering/TextBoard.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "acf828bd5ce76a843909d758ac1b81e3",
+    "semantic_hash": "acf828bd5ce76a843909d758ac1b81e3"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Client/UI/HUD/Rendering/TextBuilder.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "1928a90e35c84851772a931ee2324fda",
+    "semantic_hash": "1928a90e35c84851772a931ee2324fda"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/RichHudClient.csproj": {
+    "mtime": 1768158805.236207,
+    "ast_hash": "7629b74631d120adb3a0bf8b19f3f5b0",
+    "semantic_hash": "7629b74631d120adb3a0bf8b19f3f5b0"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/APIVersionIDTable.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "8418bc0fc205485fcba7109bc2ee598b",
+    "semantic_hash": "8418bc0fc205485fcba7109bc2ee598b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/ApiContainers.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "9fc58720347abdda90abdc8f807f1e75",
+    "semantic_hash": "9fc58720347abdda90abdc8f807f1e75"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Collections.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "31f276f8acc0ac652b44b5ae03935294",
+    "semantic_hash": "31f276f8acc0ac652b44b5ae03935294"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Extensions/CollectionExtensions.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "1d434b2c4d7b6496cb73e188c85c93d1",
+    "semantic_hash": "1d434b2c4d7b6496cb73e188c85c93d1"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Extensions/MathExtensions.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "6375b89d85e22632a20b0ea7ffa33103",
+    "semantic_hash": "6375b89d85e22632a20b0ea7ffa33103"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Extensions/VectorExtensions.cs": {
+    "mtime": 1768158799.364125,
+    "ast_hash": "3d6da643e770cb9700cf2a017710446d",
+    "semantic_hash": "3d6da643e770cb9700cf2a017710446d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/ObjectPool.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "e0f513831174d2012e076e0f8c0ab4a7",
+    "semantic_hash": "e0f513831174d2012e076e0f8c0ab4a7"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/PoolPolicies/ListPoolPolicy.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "4fe38c5268c68052bafb817dceab2bd8",
+    "semantic_hash": "4fe38c5268c68052bafb817dceab2bd8"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/PoolPolicies/StringBuilderPoolPolicy.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "45bbbb1cbec03f9c476ce796c5487853",
+    "semantic_hash": "45bbbb1cbec03f9c476ce796c5487853"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/TaskPool.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "0d039ee5a205fc5b2f537d94c74c2aa2",
+    "semantic_hash": "0d039ee5a205fc5b2f537d94c74c2aa2"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Utilities/Color.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "c51a654d5f3ccaef545b3dbebb4e8499",
+    "semantic_hash": "c51a654d5f3ccaef545b3dbebb4e8499"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Utilities/Debug.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "db2a63afb9d5f2071c50f3547c8a69b6",
+    "semantic_hash": "db2a63afb9d5f2071c50f3547c8a69b6"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Utilities/Math.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "6542c90dec2d06fcb365771d474e5eff",
+    "semantic_hash": "6542c90dec2d06fcb365771d474e5eff"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Utilities/ProtoBuf.cs": {
+    "mtime": 1768158799.3638158,
+    "ast_hash": "84962922f5a884244fb061f642fd05ba",
+    "semantic_hash": "84962922f5a884244fb061f642fd05ba"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/General/Utilities/Xml.cs": {
+    "mtime": 1768158799.75731,
+    "ast_hash": "99e02446de42ce3616b905b6c3850644",
+    "semantic_hash": "99e02446de42ce3616b905b6c3850644"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/IO/LocalFileIO.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "ec81af808ae99a937cf5433fa08bc83c",
+    "semantic_hash": "ec81af808ae99a937cf5433fa08bc83c"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/IO/ReadOnlyModFileIO.cs": {
+    "mtime": 1768158799.4623604,
+    "ast_hash": "f3614d2489797a7e9d3883739eed0c94",
+    "semantic_hash": "f3614d2489797a7e9d3883739eed0c94"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/Internal/ExceptionHandler.cs": {
+    "mtime": 1768158799.5593135,
+    "ast_hash": "e990d97449a51e42bea7e9988c98a55e",
+    "semantic_hash": "e990d97449a51e42bea7e9988c98a55e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/Internal/ModBase.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "6e63cdbfb97eeee1f766ef908a3772fc",
+    "semantic_hash": "6e63cdbfb97eeee1f766ef908a3772fc"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/Internal/RichHudCore.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "51c4c13e2bb3a71ef25cf2b74718e0df",
+    "semantic_hash": "51c4c13e2bb3a71ef25cf2b74718e0df"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/MsgEnums.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "d8edea57bc17a6775d27e058039cda45",
+    "semantic_hash": "d8edea57bc17a6775d27e058039cda45"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/BindClientAccessors.cs": {
+    "mtime": 1768158799.3642025,
+    "ast_hash": "54fccf56e1f682ed056293668f30304b",
+    "semantic_hash": "54fccf56e1f682ed056293668f30304b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/BindDefinition.cs": {
+    "mtime": 1768158799.5606396,
+    "ast_hash": "1b763f338b5f98e2be7ae993dd97248b",
+    "semantic_hash": "1b763f338b5f98e2be7ae993dd97248b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/BindGroupInitializer.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "8130579c69f36b6ab829a16023757660",
+    "semantic_hash": "8130579c69f36b6ab829a16023757660"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/ControlHandle.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "03520b2e20587eeeefef5ed432375d2d",
+    "semantic_hash": "03520b2e20587eeeefef5ed432375d2d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/CustomControls.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "1d901f66bb34b1562d9832c2b837e667",
+    "semantic_hash": "1d901f66bb34b1562d9832c2b837e667"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/IBind.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "511f641eb387b43b69f4a704418b8488",
+    "semantic_hash": "511f641eb387b43b69f4a704418b8488"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/IBindGroup.cs": {
+    "mtime": 1768158799.4625003,
+    "ast_hash": "889c0cee00bc6ec69d38d89857f401e9",
+    "semantic_hash": "889c0cee00bc6ec69d38d89857f401e9"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/BindManager/IControl.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "dc3884e2d0dbd3fb73b15812afb33d7d",
+    "semantic_hash": "dc3884e2d0dbd3fb73b15812afb33d7d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/HudElementBase.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "325ead7baad38fc4a7c6eec9bce4d46c",
+    "semantic_hash": "325ead7baad38fc4a7c6eec9bce4d46c"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/HudNodeBase.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "6f955db3cd9d08eeffe3e19fd659351f",
+    "semantic_hash": "6f955db3cd9d08eeffe3e19fd659351f"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/HudNodeData.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "f7865308dde94a27c151ca7e1588d4b0",
+    "semantic_hash": "f7865308dde94a27c151ca7e1588d4b0"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/HudParentBase.cs": {
+    "mtime": 1768158800.650293,
+    "ast_hash": "85c601973834398b2ba177b6314b15b1",
+    "semantic_hash": "85c601973834398b2ba177b6314b15b1"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/HudSpaceNodeBase.cs": {
+    "mtime": 1768158799.5606396,
+    "ast_hash": "bf9556668dca3f44be0484296c45155c",
+    "semantic_hash": "bf9556668dca3f44be0484296c45155c"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/LabelBoxBase.cs": {
+    "mtime": 1768158799.5593135,
+    "ast_hash": "b3d77327bd5ff2f0e0f8b16445a4b2ee",
+    "semantic_hash": "b3d77327bd5ff2f0e0f8b16445a4b2ee"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/LabelElementBase.cs": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "94343123b3b7f3f2df8a8ad6f47b2137",
+    "semantic_hash": "94343123b3b7f3f2df8a8ad6f47b2137"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/NodeUtils.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "db1fed7761b4493444f4115c453e29cd",
+    "semantic_hash": "db1fed7761b4493444f4115c453e29cd"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/ParentUtils.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "be32499b377335bb9e53d75f08d09b5a",
+    "semantic_hash": "be32499b377335bb9e53d75f08d09b5a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementBases/WindowBase.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "66cefbb503908cc7b93d4489fc57913d",
+    "semantic_hash": "66cefbb503908cc7b93d4489fc57913d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementEnums.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "0d02634b0d224a29af21b128e9d135d4",
+    "semantic_hash": "0d02634b0d224a29af21b128e9d135d4"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IEntryBox.cs": {
+    "mtime": 1768158800.3532987,
+    "ast_hash": "f8b6342e0787e4617e32ae462feb7b2a",
+    "semantic_hash": "f8b6342e0787e4617e32ae462feb7b2a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IHudCollection.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "ddd39399fe4739159fa2259377c83285",
+    "semantic_hash": "ddd39399fe4739159fa2259377c83285"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/ILabelElement.cs": {
+    "mtime": 1768158800.0553043,
+    "ast_hash": "b0fe13506c6e26e4528ebd77160ef36d",
+    "semantic_hash": "b0fe13506c6e26e4528ebd77160ef36d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudElement.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "f23175de2b7d4dacfb2b51aaaa18ec82",
+    "semantic_hash": "f23175de2b7d4dacfb2b51aaaa18ec82"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudNode.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "c936438d9cdc3be3934ad3e49826504e",
+    "semantic_hash": "c936438d9cdc3be3934ad3e49826504e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudParent.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "41cf13f8636984289f4024a00ee16d34",
+    "semantic_hash": "41cf13f8636984289f4024a00ee16d34"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IReadOnlyHudSpaceNode.cs": {
+    "mtime": 1768158799.5604193,
+    "ast_hash": "e0ae592aa9052f7dee99f823dfe6ff37",
+    "semantic_hash": "e0ae592aa9052f7dee99f823dfe6ff37"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElementInterfaces/IValueControl.cs": {
+    "mtime": 1768158800.4512968,
+    "ast_hash": "bae9381d014f715211f88c3537b1bc6e",
+    "semantic_hash": "bae9381d014f715211f88c3537b1bc6e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/BorderBox.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "a5207c2b0f0cc841dbad1d5893669690",
+    "semantic_hash": "a5207c2b0f0cc841dbad1d5893669690"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/BorderedButton.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "0687db50c391705901c5c8399b851cc0",
+    "semantic_hash": "0687db50c391705901c5c8399b851cc0"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/BorderedCheckBox.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "aa6bed3bdcbe4bce9d666b1fbe1feddb",
+    "semantic_hash": "aa6bed3bdcbe4bce9d666b1fbe1feddb"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/Button.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "275d3f4a4dfbc2217a8ca4ffab7eee0b",
+    "semantic_hash": "275d3f4a4dfbc2217a8ca4ffab7eee0b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/LabelBoxButton.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "a717f36472c0f2a43b6a616f3a2c7cfd",
+    "semantic_hash": "a717f36472c0f2a43b6a616f3a2c7cfd"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/LabelButton.cs": {
+    "mtime": 1768158800.650293,
+    "ast_hash": "f4f7ad2f16f1d143d90fef492fe8dcd6",
+    "semantic_hash": "f4f7ad2f16f1d143d90fef492fe8dcd6"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/NamedCheckBox.cs": {
+    "mtime": 1768158800.155324,
+    "ast_hash": "856cc999d6de66ff89a904dbcb3a3068",
+    "semantic_hash": "856cc999d6de66ff89a904dbcb3a3068"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/NamedOnOffButton.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "1694246bf578d1fafa16faa6bd1dee98",
+    "semantic_hash": "1694246bf578d1fafa16faa6bd1dee98"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Buttons/OnOffButton.cs": {
+    "mtime": 1768158799.3623173,
+    "ast_hash": "8485bac63303abb9a1611a72eba4e60f",
+    "semantic_hash": "8485bac63303abb9a1611a72eba4e60f"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ColorPickerHSV.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "85c44169b74720542005c550fa5e8943",
+    "semantic_hash": "85c44169b74720542005c550fa5e8943"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ColorPickerRGB.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "e7f3adefe8ec7d332c66e551056ad778",
+    "semantic_hash": "e7f3adefe8ec7d332c66e551056ad778"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/ScrollBox.cs": {
+    "mtime": 1768158799.3633173,
+    "ast_hash": "91125072bba77fd5f6a0358ce238e943",
+    "semantic_hash": "91125072bba77fd5f6a0358ce238e943"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/Dropdown.cs": {
+    "mtime": 1768158799.6589644,
+    "ast_hash": "d0649daddbb02f9aa98affec84139f80",
+    "semantic_hash": "d0649daddbb02f9aa98affec84139f80"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/ListBox.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "8c22709faa43cfc1af5b10a02d347c4e",
+    "semantic_hash": "8c22709faa43cfc1af5b10a02d347c4e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/RadialSelectionBox.cs": {
+    "mtime": 1768158799.8585064,
+    "ast_hash": "6314a57167c9ce71b9f03b0299d9beb7",
+    "semantic_hash": "6314a57167c9ce71b9f03b0299d9beb7"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/SelectionBox.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "8ab15014a20ead07bd36f58ba2702458",
+    "semantic_hash": "8ab15014a20ead07bd36f58ba2702458"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/SelectionBoxBase.cs": {
+    "mtime": 1768158800.2543938,
+    "ast_hash": "d3cbfcd3cbae91256a5ba9188387d2db",
+    "semantic_hash": "d3cbfcd3cbae91256a5ba9188387d2db"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeBox.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "7a9fede11f2275596b9c68a7868ef8fc",
+    "semantic_hash": "7a9fede11f2275596b9c68a7868ef8fc"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeBoxBase.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "c3acd76b496780e72f57993ec8a44498",
+    "semantic_hash": "c3acd76b496780e72f57993ec8a44498"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/SelectionBoxes/TreeList.cs": {
+    "mtime": 1768158799.8586025,
+    "ast_hash": "8af206f6361c3f3866301e7ed0afb223",
+    "semantic_hash": "8af206f6361c3f3866301e7ed0afb223"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/NamedSliderBox.cs": {
+    "mtime": 1768158800.2543938,
+    "ast_hash": "db3591ede345c5b45f7f33f352babc72",
+    "semantic_hash": "db3591ede345c5b45f7f33f352babc72"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/ScrollBar.cs": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "f448bff1e365e912ad94c7589f8c9cd7",
+    "semantic_hash": "f448bff1e365e912ad94c7589f8c9cd7"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/SliderBar.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "85947a61228a1a7a878ad458cd99e65e",
+    "semantic_hash": "85947a61228a1a7a878ad458cd99e65e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/Sliders/SliderBox.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "6e5c1f0ce32f3c87c739cd70dbcc96c4",
+    "semantic_hash": "6e5c1f0ce32f3c87c739cd70dbcc96c4"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/TextBox.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "d72473e4fdb5c9eadc3d7355756e7cbf",
+    "semantic_hash": "d72473e4fdb5c9eadc3d7355756e7cbf"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ClickableHudElements/TextField.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "223a2b6bdf752bc82ed4a2649cb16676",
+    "semantic_hash": "223a2b6bdf752bc82ed4a2649cb16676"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IHudNodeContainer.cs": {
+    "mtime": 1768158799.364125,
+    "ast_hash": "0a9e536edb7c149bc55696c12eb0549f",
+    "semantic_hash": "0a9e536edb7c149bc55696c12eb0549f"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IListBoxEntry.cs": {
+    "mtime": 1768158799.5608706,
+    "ast_hash": "354998c18bd0ff9d52b445be44fe48f5",
+    "semantic_hash": "354998c18bd0ff9d52b445be44fe48f5"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/IScrollBoxEntry.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "116b6f3a353f85ae49276b0530ea7332",
+    "semantic_hash": "116b6f3a353f85ae49276b0530ea7332"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/ContainerInterfaces/ISelectionBoxEntry.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "6f8d94619936f4b786256f95838e8bf8",
+    "semantic_hash": "6f8d94619936f4b786256f95838e8bf8"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/HudElementContainer.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "9573369e69f6dad9cea422c0f1974ab0",
+    "semantic_hash": "9573369e69f6dad9cea422c0f1974ab0"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/HudElementTuple.cs": {
+    "mtime": 1768158799.560588,
+    "ast_hash": "02062b73515cf9080fc8647b2cb75949",
+    "semantic_hash": "02062b73515cf9080fc8647b2cb75949"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ListBoxEntry.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "eb3ac7e631bc9b892d3ed74589e367f3",
+    "semantic_hash": "eb3ac7e631bc9b892d3ed74589e367f3"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ScrollBoxEntry.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "09a391481a7a7dabe7da961e620c4345",
+    "semantic_hash": "09a391481a7a7dabe7da961e620c4345"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/ScrollBoxEntryTuple.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "3bf436db0eaf4e9b1aa36c185bddb972",
+    "semantic_hash": "3bf436db0eaf4e9b1aa36c185bddb972"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Containers/SelectionBoxEntry.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "af955d190e78e922f2e089310f830f2b",
+    "semantic_hash": "af955d190e78e922f2e089310f830f2b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/DoubleLabelBox.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "62b64ed95d10a9dd09db5cd1f35ad6af",
+    "semantic_hash": "62b64ed95d10a9dd09db5cd1f35ad6af"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/EmptyHudElement.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "68dbf177f53ce01ff83b0d910bc015c0",
+    "semantic_hash": "68dbf177f53ce01ff83b0d910bc015c0"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/HudChain.cs": {
+    "mtime": 1768158799.6589644,
+    "ast_hash": "123f1c3c5297184ed5497ddc59f801c5",
+    "semantic_hash": "123f1c3c5297184ed5497ddc59f801c5"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/HudCollection.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "ada89d3146140a20c3791caad3cd8e1e",
+    "semantic_hash": "ada89d3146140a20c3791caad3cd8e1e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/BindInputElement.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "b4ef111889792b3b5ac08b45f9ce35ca",
+    "semantic_hash": "b4ef111889792b3b5ac08b45f9ce35ca"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IBindInput.cs": {
+    "mtime": 1768158800.452297,
+    "ast_hash": "5e97e1ae90d57bc50082686f798e4edd",
+    "semantic_hash": "5e97e1ae90d57bc50082686f798e4edd"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IClickableElement.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "17d54d2b42d476fd6d7bb3fbdb898810",
+    "semantic_hash": "17d54d2b42d476fd6d7bb3fbdb898810"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/IFocusHandler.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "2f1b8bb103046a3ee49d178e58ccef74",
+    "semantic_hash": "2f1b8bb103046a3ee49d178e58ccef74"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/InputFocusHandler.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "d7f19bb2d1911d8ccdf15324ebe510d5",
+    "semantic_hash": "d7f19bb2d1911d8ccdf15324ebe510d5"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/ListInputElement.cs": {
+    "mtime": 1768158800.2533007,
+    "ast_hash": "220252a11c004ea672a62910d947f38a",
+    "semantic_hash": "220252a11c004ea672a62910d947f38a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/InputElements/MouseInputElement.cs": {
+    "mtime": 1768158800.4527702,
+    "ast_hash": "aaceb8814cf6b311821ea5e375554f8a",
+    "semantic_hash": "aaceb8814cf6b311821ea5e375554f8a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/Label.cs": {
+    "mtime": 1768158800.4512968,
+    "ast_hash": "5bd4a6eb4ac5b604a73665798cbf9bfc",
+    "semantic_hash": "5bd4a6eb4ac5b604a73665798cbf9bfc"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/LabelBox.cs": {
+    "mtime": 1768158800.056161,
+    "ast_hash": "ec538928f6f77654288382bc03f8e6b2",
+    "semantic_hash": "ec538928f6f77654288382bc03f8e6b2"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudElements/TexturedBox.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "3104af3824904d1f806b5c88bffc6a39",
+    "semantic_hash": "3104af3824904d1f806b5c88bffc6a39"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudMainEnums.cs": {
+    "mtime": 1768158799.363295,
+    "ast_hash": "10baeb7c27028640873f5667a3c842a9",
+    "semantic_hash": "10baeb7c27028640873f5667a3c842a9"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/CamSpaceNode.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "78b2b170ec8da467a2cf901369343247",
+    "semantic_hash": "78b2b170ec8da467a2cf901369343247"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/CustomSpaceNode.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "1ec71ab03942952373f00d6c8620b97e",
+    "semantic_hash": "1ec71ab03942952373f00d6c8620b97e"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/HudSpaceNodes/ScaledSpaceNode.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "5fb3786e00921005892951452f8687ae",
+    "semantic_hash": "5fb3786e00921005892951452f8687ae"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/ICursor.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "48cb620f55094d8330609a11336441c4",
+    "semantic_hash": "48cb620f55094d8330609a11336441c4"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/BillboardMats.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "9c244323636e78cd4e8ebf7302360317",
+    "semantic_hash": "9c244323636e78cd4e8ebf7302360317"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/BillboardUtils.cs": {
+    "mtime": 1768158799.8581429,
+    "ast_hash": "96ad7d58df6c5af08996289fd6cb2b74",
+    "semantic_hash": "96ad7d58df6c5af08996289fd6cb2b74"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/BlockBoard.cs": {
+    "mtime": 1768158799.4625826,
+    "ast_hash": "fe61b49d080b324d21e8a18130220ea6",
+    "semantic_hash": "fe61b49d080b324d21e8a18130220ea6"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/IFontMin.cs": {
+    "mtime": 1768158799.9564652,
+    "ast_hash": "62752ebe6248bf44f65444d6cf84ea37",
+    "semantic_hash": "62752ebe6248bf44f65444d6cf84ea37"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/ITextBoard.cs": {
+    "mtime": 1768158799.8573081,
+    "ast_hash": "1453ca23d6ad33dda82e8ebad8a43ccb",
+    "semantic_hash": "1453ca23d6ad33dda82e8ebad8a43ccb"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/MatBoard.cs": {
+    "mtime": 1768158799.8585064,
+    "ast_hash": "424f0d791329963610ccb2a4d5d1e7a6",
+    "semantic_hash": "424f0d791329963610ccb2a4d5d1e7a6"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/Material.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "564335fe5aed4d29c43145a42a9f496d",
+    "semantic_hash": "564335fe5aed4d29c43145a42a9f496d"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/MaterialFrame.cs": {
+    "mtime": 1768158800.8472893,
+    "ast_hash": "bf86872538c6775438303c2217cf8b08",
+    "semantic_hash": "bf86872538c6775438303c2217cf8b08"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/PolyBoard.cs": {
+    "mtime": 1768158800.6492932,
+    "ast_hash": "b549381239fcf881211a589847fa005b",
+    "semantic_hash": "b549381239fcf881211a589847fa005b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/PuncturedPolyBoard.cs": {
+    "mtime": 1768158799.9553063,
+    "ast_hash": "d2d76ae2a99479af68ccac53d34690c2",
+    "semantic_hash": "d2d76ae2a99479af68ccac53d34690c2"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/QuadBoard.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "f31258edac79257362de4f9cb8270dfe",
+    "semantic_hash": "f31258edac79257362de4f9cb8270dfe"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/ILine.cs": {
+    "mtime": 1768158799.658641,
+    "ast_hash": "81715170f0ff493457c0bd8778b48eb9",
+    "semantic_hash": "81715170f0ff493457c0bd8778b48eb9"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/IRichChar.cs": {
+    "mtime": 1768158799.4613154,
+    "ast_hash": "5e3d77da0b9e041e3744d2718ac2a814",
+    "semantic_hash": "5e3d77da0b9e041e3744d2718ac2a814"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/Rendering/TextBuilderInterfaces/ITextBuilder.cs": {
+    "mtime": 1768158799.9564652,
+    "ast_hash": "debea33b39fabff6aeaeaae99cb03fd2",
+    "semantic_hash": "debea33b39fabff6aeaeaae99cb03fd2"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/RichText/GlyphFormat.cs": {
+    "mtime": 1768158799.7587914,
+    "ast_hash": "03859e1151ace756a32fe139ca47547a",
+    "semantic_hash": "03859e1151ace756a32fe139ca47547a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/RichText/RichText.cs": {
+    "mtime": 1768158799.758403,
+    "ast_hash": "f2ddcea63a3df5f61f7d747b7309442b",
+    "semantic_hash": "f2ddcea63a3df5f61f7d747b7309442b"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/TerminalColors.cs": {
+    "mtime": 1768158800.1543024,
+    "ast_hash": "16408d56b0b0dcf2f6efc361a903dbbf",
+    "semantic_hash": "16408d56b0b0dcf2f6efc361a903dbbf"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/HUD/ToolTip.cs": {
+    "mtime": 1768158799.3643174,
+    "ast_hash": "5f0e62e6dc17b5b771a7b1b414ba3ede",
+    "semantic_hash": "5f0e62e6dc17b5b771a7b1b414ba3ede"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/SharedBinds.cs": {
+    "mtime": 1784126459.4299078,
+    "ast_hash": "3defe6e526a133fb71317df117ff259a",
+    "semantic_hash": "3defe6e526a133fb71317df117ff259a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/UI/TextInput.cs": {
+    "mtime": 1768158799.4625003,
+    "ast_hash": "7ea2736d81e0d233438e917d4fff754a",
+    "semantic_hash": "7ea2736d81e0d233438e917d4fff754a"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/ServiceTerminalFrameworkClient.cs": {
+    "mtime": 1784143171.9131813,
+    "ast_hash": "2d2dec3c11021e2a6466e7fe27f09eec",
+    "semantic_hash": "2d2dec3c11021e2a6466e7fe27f09eec"
+  },
+  "tools/ServiceTerminalModelPatcher/Program.cs": {
+    "mtime": 1784121978.2154348,
+    "ast_hash": "6c71348589408a6f7a4eba4cd337195a",
+    "semantic_hash": "6c71348589408a6f7a4eba4cd337195a"
+  },
+  "tools/ServiceTerminalModelPatcher/ServiceTerminalModelPatcher.csproj": {
+    "mtime": 1784117513.231065,
+    "ast_hash": "79c3fb652020ecbc560fe26346e1b60b",
+    "semantic_hash": "79c3fb652020ecbc560fe26346e1b60b"
+  },
+  ".github/workflows/service-terminal-framework-workshop-upload.yml": {
+    "mtime": 1784292388.1266975,
+    "ast_hash": "8508f7527959ad5a28f2dd025d221336",
+    "semantic_hash": "8508f7527959ad5a28f2dd025d221336"
+  },
+  ".github/workflows/steam-workshop-upload.yml": {
+    "mtime": 1784292380.314826,
+    "ast_hash": "462ce58b39fb8cfd9cff45181b6625f3",
+    "semantic_hash": "462ce58b39fb8cfd9cff45181b6625f3"
+  },
+  "README.md": {
+    "mtime": 1784389639.1942768,
+    "ast_hash": "ae9b2f2277c5bf28b6babdf5c8ab0898",
+    "semantic_hash": "ae9b2f2277c5bf28b6babdf5c8ab0898"
+  },
+  "ServiceTerminalFramework/README.md": {
+    "mtime": 1784149012.2917626,
+    "ast_hash": "a4b70903608ad86044df9acf6f80c446",
+    "semantic_hash": "a4b70903608ad86044df9acf6f80c446"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/README.md": {
+    "mtime": 1768158800.7482913,
+    "ast_hash": "9ef8a8832759e9def1009a4fe6608ae9",
+    "semantic_hash": "9ef8a8832759e9def1009a4fe6608ae9"
+  },
+  "ServiceTerminalFramework/src/Data/Scripts/ServiceTerminalFramework/RichHudFramework/Shared/README.md": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "c328bc73eebd58887aad19aa403e9e90",
+    "semantic_hash": "c328bc73eebd58887aad19aa403e9e90"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/README.md": {
+    "mtime": 1768158800.7482913,
+    "ast_hash": "9ef8a8832759e9def1009a4fe6608ae9",
+    "semantic_hash": "9ef8a8832759e9def1009a4fe6608ae9"
+  },
+  "ShipInsurance/src/Data/Scripts/ShipInsurance/RichHudFramework/Shared/README.md": {
+    "mtime": 1768158800.0558977,
+    "ast_hash": "c328bc73eebd58887aad19aa403e9e90",
+    "semantic_hash": "c328bc73eebd58887aad19aa403e9e90"
+  },
+  "graphify-out/memory/query_20260718_122354_track_ramming__self_grinding__faction_member_grind.md": {
+    "mtime": 1784377434.834473,
+    "ast_hash": "915dcf69d67255c839bd14a549c90e0e",
+    "semantic_hash": "915dcf69d67255c839bd14a549c90e0e"
+  },
+  "graphify-out/memory/query_20260718_135120_implement_persisted_cause_and_relationship_damage.md": {
+    "mtime": 1784382680.8384278,
+    "ast_hash": "11c9a14c99d4f0d6d6f79c7e6c8200a0",
+    "semantic_hash": "11c9a14c99d4f0d6d6f79c7e6c8200a0"
+  },
+  "ServiceTerminalFramework/src/thumb.png": {
+    "mtime": 1784149740.4242153,
+    "ast_hash": "5455e01a20363c5775cc29bed450d307",
+    "semantic_hash": "5455e01a20363c5775cc29bed450d307"
+  },
+  "ShipInsurance/src/thumb.png": {
+    "mtime": 1784302111.4998124,
+    "ast_hash": "096e138c3f04e5cac6c43fb3c217b941",
+    "semantic_hash": "096e138c3f04e5cac6c43fb3c217b941"
+  }
+}
