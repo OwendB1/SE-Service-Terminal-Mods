@@ -1,100 +1,37 @@
 {
-  "generated_at": "2026-07-18T15:39:59.511106+00:00",
+  "generated_at": "2026-07-18T21:09:02.351354+00:00",
   "nodes": {
-    "shipinsurance_src_data_scripts_shipinsurance_insurancemath_shipinsurance_insurancemath": {
-      "code_fingerprint": "7058564c5902d5cfff1472d8043095e586658d371a4e3b854171c8edff06f178",
-      "label": "InsuranceMath",
-      "last": "2026-07-18T13:51:20.838272+00:00",
+    "shipinsurance_src_data_scripts_shipinsurance_insurancerichhud_shipinsurance_insurancerichhudwindow": {
+      "code_fingerprint": "b103a0fe5102532289406b70023deb4c2bd33acb6487d7125640f53faf6721af",
+      "label": "InsuranceRichHudWindow",
+      "last": "2026-07-18T21:05:52.399772+00:00",
       "provenance": [
         {
-          "date": "2026-07-18T13:51:20.838272+00:00",
+          "date": "2026-07-18T21:05:52.399772+00:00",
           "outcome": "useful",
-          "q": "Implement persisted cause and relationship damage attribution with weighted insurance claim pricing"
+          "q": "That already seems better but I see no reason for us to modify the controls. Why are we modifying the controls specifically?"
         }
       ],
-      "score": 0.998258309,
-      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceMath.cs",
+      "score": 0.999949205,
+      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceRichHud.cs",
       "status": "tentative",
       "uses": 1
     },
-    "shipinsurance_src_data_scripts_shipinsurance_insurancemodels_shipinsurance_claimquote": {
-      "code_fingerprint": "f06badbd99a38e729ae5a77510622124da04867d8804e060083273e029895eba",
-      "label": "ClaimQuote",
-      "last": "2026-07-18T13:51:20.838272+00:00",
+    "shipinsurance_src_data_scripts_shipinsurance_insuranceterminalcontrols_shipinsurance_insuranceterminalcontrols": {
+      "code_fingerprint": "acd626463757094e8c26b98870c6cca415b088267c86bd6a4548b33bfd8c6b12",
+      "label": "InsuranceTerminalControls",
+      "last": "2026-07-18T21:05:52.399772+00:00",
       "provenance": [
         {
-          "date": "2026-07-18T13:51:20.838272+00:00",
+          "date": "2026-07-18T21:05:52.399772+00:00",
           "outcome": "useful",
-          "q": "Implement persisted cause and relationship damage attribution with weighted insurance claim pricing"
-        },
-        {
-          "date": "2026-07-18T12:23:54.834378+00:00",
-          "outcome": "useful",
-          "q": "Track ramming, self grinding, faction-member grinding, faction-owned block damage, and other insurance damage types as separate pricing inputs"
+          "q": "That already seems better but I see no reason for us to modify the controls. Why are we modifying the controls specifically?"
         }
       ],
-      "score": 1.995117167,
-      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceModels.cs",
-      "status": "preferred",
-      "uses": 2
-    },
-    "shipinsurance_src_data_scripts_shipinsurance_insurancemodels_shipinsurance_damageattribution": {
-      "code_fingerprint": "f06badbd99a38e729ae5a77510622124da04867d8804e060083273e029895eba",
-      "label": "DamageAttribution",
-      "last": "2026-07-18T13:51:20.838272+00:00",
-      "provenance": [
-        {
-          "date": "2026-07-18T13:51:20.838272+00:00",
-          "outcome": "useful",
-          "q": "Implement persisted cause and relationship damage attribution with weighted insurance claim pricing"
-        },
-        {
-          "date": "2026-07-18T12:23:54.834378+00:00",
-          "outcome": "useful",
-          "q": "Track ramming, self grinding, faction-member grinding, faction-owned block damage, and other insurance damage types as separate pricing inputs"
-        }
-      ],
-      "score": 1.995117167,
-      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceModels.cs",
-      "status": "preferred",
-      "uses": 2
-    },
-    "shipinsurance_src_data_scripts_shipinsurance_insurancemodels_shipinsurance_insurancepolicy": {
-      "code_fingerprint": "f06badbd99a38e729ae5a77510622124da04867d8804e060083273e029895eba",
-      "label": "InsurancePolicy",
-      "last": "2026-07-18T13:51:20.838272+00:00",
-      "provenance": [
-        {
-          "date": "2026-07-18T13:51:20.838272+00:00",
-          "outcome": "useful",
-          "q": "Implement persisted cause and relationship damage attribution with weighted insurance claim pricing"
-        }
-      ],
-      "score": 0.998258309,
-      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceModels.cs",
+      "score": 0.999949205,
+      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceTerminalControls.cs",
       "status": "tentative",
       "uses": 1
-    },
-    "shipinsurance_src_data_scripts_shipinsurance_insuranceruntime_shipinsurance_insuranceruntime": {
-      "code_fingerprint": "0e906d699d5da7486db3557b6f401de2283cbe03e49b0be9096cc69e8e731d30",
-      "label": "InsuranceRuntime",
-      "last": "2026-07-18T13:51:20.838272+00:00",
-      "provenance": [
-        {
-          "date": "2026-07-18T13:51:20.838272+00:00",
-          "outcome": "useful",
-          "q": "Implement persisted cause and relationship damage attribution with weighted insurance claim pricing"
-        },
-        {
-          "date": "2026-07-18T12:23:54.834378+00:00",
-          "outcome": "useful",
-          "q": "Track ramming, self grinding, faction-member grinding, faction-owned block damage, and other insurance damage types as separate pricing inputs"
-        }
-      ],
-      "score": 1.995117167,
-      "source_file": "ShipInsurance/src/Data/Scripts/ShipInsurance/InsuranceRuntime.cs",
-      "status": "preferred",
-      "uses": 2
     }
   },
   "version": 1
