@@ -13,6 +13,8 @@ namespace ShipInsurance
         private const int ResponsePacket = 2;
         private const int PolicyListRequestPacket = 3;
         private const int PolicyListResponsePacket = 4;
+        private const int LedgerRequestPacket = 5;
+        private const int LedgerResponsePacket = 6;
 
         private readonly InsuranceRuntime _runtime;
         private bool _active;
@@ -21,6 +23,7 @@ namespace ShipInsurance
         private bool _chatRegistered;
 
         internal event Action<NetworkPacket> PolicyListReceived;
+        internal event Action<NetworkPacket> LedgerReceived;
 
         internal InsuranceCommands(InsuranceRuntime runtime)
         {
@@ -49,6 +52,7 @@ namespace ShipInsurance
             if (_networkRegistered && MyAPIGateway.Multiplayer != null)
                 MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkChannel, OnNetworkMessage);
             PolicyListReceived = null;
+            LedgerReceived = null;
         }
 
         internal void RequestPolicyList(long serviceTerminalId)
@@ -79,6 +83,21 @@ namespace ShipInsurance
             };
             if (_isServer)
                 HandleCommand(MyAPIGateway.Multiplayer.MyId, packet);
+            else
+                MyAPIGateway.Multiplayer.SendMessageToServer(NetworkChannel,
+                    MyAPIGateway.Utilities.SerializeToBinary(packet), true);
+        }
+
+        internal void RequestLedger(long policyId, long serviceTerminalId)
+        {
+            NetworkPacket packet = new NetworkPacket
+            {
+                Kind = LedgerRequestPacket,
+                ControlledGridId = policyId,
+                ServiceTerminalId = serviceTerminalId
+            };
+            if (_isServer)
+                HandleLedgerRequest(MyAPIGateway.Multiplayer.MyId, packet);
             else
                 MyAPIGateway.Multiplayer.SendMessageToServer(NetworkChannel,
                     MyAPIGateway.Utilities.SerializeToBinary(packet), true);
@@ -141,11 +160,14 @@ namespace ShipInsurance
                     if (packet.Kind == CommandPacket) HandleCommand(sender, packet);
                     else if (packet.Kind == PolicyListRequestPacket)
                         HandlePolicyListRequest(sender, packet.ServiceTerminalId);
+                    else if (packet.Kind == LedgerRequestPacket)
+                        HandleLedgerRequest(sender, packet);
                 }
                 else if (!_isServer && fromServer)
                 {
                     if (packet.Kind == ResponsePacket) ShowClientText(packet.Text);
                     else if (packet.Kind == PolicyListResponsePacket) PublishPolicyList(packet);
+                    else if (packet.Kind == LedgerResponsePacket) PublishLedger(packet);
                 }
             }
             catch (Exception exception)
@@ -267,9 +289,45 @@ namespace ShipInsurance
                     MyAPIGateway.Utilities.SerializeToBinary(response), steamId, true);
         }
 
+        private void HandleLedgerRequest(ulong steamId, NetworkPacket request)
+        {
+            IMyPlayer player = InsuranceRuntime.FindPlayer(steamId);
+            if (player == null) return;
+
+            IMyCubeGrid ignoredGrid;
+            string error;
+            ClaimLedger ledger = null;
+            if (!_runtime.TryValidateServiceTerminalRequest(player,
+                request.ServiceTerminalId, 0, false, out ignoredGrid, out error))
+                ledger = new ClaimLedger { Error = error };
+            else
+                ledger = _runtime.BuildClaimLedger(player, request.ControlledGridId,
+                    request.ServiceTerminalId) ??
+                    new ClaimLedger { Error = "Policy not found. Refresh insurance targets." };
+
+            NetworkPacket response = new NetworkPacket
+            {
+                Kind = LedgerResponsePacket,
+                ServiceTerminalId = request.ServiceTerminalId,
+                Ledger = ledger
+            };
+            if (!MyAPIGateway.Utilities.IsDedicated &&
+                steamId == MyAPIGateway.Multiplayer.MyId)
+                MyAPIGateway.Utilities.InvokeOnGameThread(delegate { PublishLedger(response); });
+            else
+                MyAPIGateway.Multiplayer.SendMessageTo(NetworkChannel,
+                    MyAPIGateway.Utilities.SerializeToBinary(response), steamId, true);
+        }
+
         private void PublishPolicyList(NetworkPacket packet)
         {
             Action<NetworkPacket> handler = PolicyListReceived;
+            if (handler != null) handler(packet);
+        }
+
+        private void PublishLedger(NetworkPacket packet)
+        {
+            Action<NetworkPacket> handler = LedgerReceived;
             if (handler != null) handler(packet);
         }
 

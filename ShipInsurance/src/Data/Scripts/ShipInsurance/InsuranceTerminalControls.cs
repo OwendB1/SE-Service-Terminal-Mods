@@ -37,6 +37,7 @@ namespace ShipInsurance
         private bool _serviceTerminalControlsRegistered;
 
         internal event Action ServiceChoicesChanged;
+        internal event Action<ClaimLedger> LedgerReceived;
 
         internal long SelectedServiceChoice => _selectedServiceChoice;
 
@@ -44,6 +45,7 @@ namespace ShipInsurance
         {
             _commands = commands;
             _commands.PolicyListReceived += ApplyServicePolicyList;
+            _commands.LedgerReceived += ApplyLedger;
         }
 
         internal void Register()
@@ -147,6 +149,7 @@ namespace ShipInsurance
         internal void Stop()
         {
             _commands.PolicyListReceived -= ApplyServicePolicyList;
+            _commands.LedgerReceived -= ApplyLedger;
             if (!_serviceTerminalControlsRegistered || MyAPIGateway.TerminalControls == null) return;
 
             for (int i = 0; i < _serviceTerminalControls.Count; i++)
@@ -335,6 +338,29 @@ namespace ShipInsurance
             SendServiceTerminalCommand(terminal, command);
         }
 
+        internal void RequestSelectedLedger(IMyTerminalBlock terminal)
+        {
+            GetSelectedServiceChoice(terminal);
+            if (_selectedPolicyId == 0)
+            {
+                if (LedgerReceived != null)
+                    LedgerReceived(new ClaimLedger { Error = "Select an existing policy first." });
+                return;
+            }
+
+            try
+            {
+                _commands.RequestLedger(_selectedPolicyId, terminal.EntityId);
+            }
+            catch (Exception exception)
+            {
+                if (LedgerReceived != null)
+                    LedgerReceived(new ClaimLedger { Error = "Ledger request failed: " +
+                        exception.Message });
+                InsuranceCommands.Log("Ledger request failed", exception);
+            }
+        }
+
         private bool CanUseSelectedGroup(IMyTerminalBlock block)
         {
             if (!CanAccessServiceTerminal(block)) return false;
@@ -463,6 +489,13 @@ namespace ShipInsurance
             }
             UpdateExpeditePresentation();
             if (ServiceChoicesChanged != null) ServiceChoicesChanged();
+        }
+
+        private void ApplyLedger(NetworkPacket packet)
+        {
+            if (packet == null || packet.ServiceTerminalId != _servicePolicyTerminalId) return;
+            if (LedgerReceived != null) LedgerReceived(packet.Ledger ??
+                new ClaimLedger { Error = "Ledger response was empty." });
         }
 
         private void SendServiceTerminalCommand(IMyTerminalBlock terminal, string command)

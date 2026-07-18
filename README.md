@@ -17,7 +17,7 @@ Each policy covers the complete mechanically linked grid group present at enroll
 
 Each insured subgrid also carries a persistent policy token in Space Engineers' serialized mod storage. If an administrative repair or cut/paste recreates the grid with a different entity ID, the server reattaches the new entity to its existing policy. Tokens absent from the active policy state, and duplicates created while the registered grid still exists, are removed.
 
-Using an Economy 2 Services Terminal opens the framework's centered provider menu with wide service buttons before any service screen. After a custom service is selected, the provider list moves to the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window without opening vanilla Services underneath. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. **Close** and Escape are owned by the framework picker, which closes the active service and restores the previous gameplay HUD mode. Selecting **Vanilla services** dismisses the picker and opens the native screen.
+Using an Economy 2 Services Terminal opens the framework's centered provider menu with wide service buttons before any service screen. After a custom service is selected, the provider list moves to the free margin on wide layouts and folds into a compact navigation rail when the aspect ratio leaves too little room; the rail expands inward on demand. Selecting **Ship Insurance** opens one unified Rich HUD insurance window without opening vanilla Services underneath. It contains the player's current account balance, a visible single-select list of existing policies and nearby uninsured mechanical groups, and compact policy actions. **Repair cost ledger** opens an overlay for the selected policy that groups repair value, effective rate, and charge by damage cause and responsible-party relationship, then reconciles the subtotal to the final quote with minimum-fee, faction-discount, or locked-quote adjustments. **Close** and Escape are owned by the framework picker, which closes the active service and restores the previous gameplay HUD mode. Selecting **Vanilla services** dismisses the picker and opens the native screen.
 
 ## Client dependency
 
@@ -39,9 +39,9 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
 - Enrollment costs the larger of `EnrollmentFlatFee` and `EnrollmentValueFraction * snapshot value`.
 - Claim loss is value-weighted. Missing blocks contribute their insured integrity value; damaged blocks contribute lost integrity value.
 - Claims unlock when loss reaches `MinimumLossRatio` (25% by default).
-- Claim price is `ClaimValueFraction * covered loss`, subject to `MinimumClaimFee`.
+- Claim price is the sum of each damaged or missing block's component-value loss multiplied by `ClaimValueFraction`, its attacker-relationship fraction, and its damage-cause multiplier, subject to `MinimumClaimFee`.
 - A conflicting replacement block at an insured position blocks the claim. Remove that block first; the mod never deletes player changes.
-- Loss above 80%, total group loss, or a completely missing insured subgrid becomes full recovery instead of repair. Recovery costs `ClaimValueFraction * full snapshot value` and replaces the insured group from clean, fully built snapshots.
+- Loss above 80%, total group loss, or a completely missing insured subgrid becomes full recovery instead of repair. Recovery prices the full snapshot through the same persisted attribution buckets; any unattributed remainder uses the unknown rate.
 - Optional economy-faction pricing discounts enrollment and full-recovery value charges according to the player's reputation with the NPC faction operating the Services Terminal. Repair, transport, and expedite fees are unchanged.
 - Optional dynamic recovery pricing uses active component offer prices at that economy station, with `ComponentPrices` as the fallback for components the station does not sell.
 - Every successful repair or recovery consumes its policy. A remote policy is committed and consumed when transport is ordered, but remains visible until delivery can be completed.
@@ -61,6 +61,17 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
   <EnrollmentValueFraction>0.5</EnrollmentValueFraction>
   <CancellationRefundFraction>0.5</CancellationRefundFraction>
   <ClaimValueFraction>1</ClaimValueFraction>
+  <OwnerDamageClaimValueFraction>1</OwnerDamageClaimValueFraction>
+  <FactionDamageClaimValueFraction>1</FactionDamageClaimValueFraction>
+  <OtherDamageClaimValueFraction>0.75</OtherDamageClaimValueFraction>
+  <EnvironmentDamageClaimValueFraction>0.75</EnvironmentDamageClaimValueFraction>
+  <UnknownDamageClaimValueFraction>0.75</UnknownDamageClaimValueFraction>
+  <GrindingDamageClaimMultiplier>1</GrindingDamageClaimMultiplier>
+  <RammingDamageClaimMultiplier>1</RammingDamageClaimMultiplier>
+  <WeaponDamageClaimMultiplier>1</WeaponDamageClaimMultiplier>
+  <EnvironmentDamageClaimMultiplier>1</EnvironmentDamageClaimMultiplier>
+  <OtherDamageClaimMultiplier>1</OtherDamageClaimMultiplier>
+  <UnknownDamageClaimMultiplier>1</UnknownDamageClaimMultiplier>
   <MinimumLossRatio>0.25</MinimumLossRatio>
   <MinimumClaimFee>0</MinimumClaimFee>
   <DefaultComponentPrice>100</DefaultComponentPrice>
@@ -99,6 +110,8 @@ All player actions exist only in the Services Terminal UI. Existing policies—i
   </ComponentPrices>
 </InsuranceConfig>
 ```
+
+Damage pricing keeps cause and attacker relationship independent. Effective rate is `ClaimValueFraction * relationship fraction * cause multiplier`. `Grinding` includes hand and ship grinders. `Ramming` is deformation damage attributed to another grid. Owner and faction relationships are captured when damage occurs, so later faction changes do not rewrite claim history. Damage with no responsible identity uses the environment rate; unresolved nonzero attackers and untracked loss use the unknown rate. Existing configs receive these defaults when fields are absent.
 
 Edit any generated component price, then run `/insurance reload` or restart the world. Missing entries—including components added by newly enabled mods—are automatically appended. `DefaultComponentPrice` is used only when a newly discovered component has no positive definition price from which to seed its generated entry. A price of `0` deliberately makes that component contribute no value. Updated prices affect new enrollment quotes and live repair/full-recovery quotes for existing policies. Policy snapshots and incident history persist in `ShipInsuranceState.bin64` in same world-storage namespace.
 `AllowTotalLossRespawn` is the backward-compatible setting name for all full, total-loss, and remote recovery.

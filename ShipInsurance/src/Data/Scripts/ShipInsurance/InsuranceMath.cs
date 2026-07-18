@@ -62,6 +62,28 @@ namespace ShipInsurance
             return Math.Max(Math.Max(0, minimumFee), Scale(valueFee, 1.0 - Clamp01(discount)));
         }
 
+        public static long AttributedClaimFee(long attributedCost, long minimumFee,
+            double discount)
+        {
+            return Math.Max(Math.Max(0, minimumFee), Scale(Math.Max(0, attributedCost),
+                1.0 - Clamp01(discount)));
+        }
+
+        public static double AttributedFraction(double currentLossRatio,
+            double recordedLossRatio, double weightedRecordedLossRatio,
+            double unknownFraction)
+        {
+            double current = Math.Max(0.0, currentLossRatio);
+            if (current <= 0.0) return 0.0;
+
+            double recorded = Math.Max(0.0, recordedLossRatio);
+            double weighted = Math.Max(0.0, weightedRecordedLossRatio);
+            double unknown = Math.Max(0.0, unknownFraction);
+            if (recorded <= 0.0) return unknown;
+            if (recorded >= current) return weighted / recorded;
+            return (weighted + (current - recorded) * unknown) / current;
+        }
+
         public static double ReputationDiscount(int reputation, int friendlyMin, int friendlyMax,
             double maximumDiscount)
         {
@@ -143,6 +165,11 @@ namespace ShipInsurance
             if (ClaimFee(250, 1.0, 0) != 250) throw new InvalidOperationException("Claim fee self-test failed.");
             if (ClaimFee(250, 1.0, 100, 0.1) != 225) throw new InvalidOperationException("Claim discount self-test failed.");
             if (ClaimFee(50, 1.0, 100, 0.5) != 100) throw new InvalidOperationException("Claim floor self-test failed.");
+            if (AttributedClaimFee(0, 100, 0.0) != 100) throw new InvalidOperationException("Attributed claim floor self-test failed.");
+            if (AttributedClaimFee(250, 100, 0.1) != 225) throw new InvalidOperationException("Attributed claim discount self-test failed.");
+            if (Math.Abs(AttributedFraction(1.0, 0.25, 0.25, 0.75) - 0.8125) > 0.00001) throw new InvalidOperationException("Partial attribution self-test failed.");
+            if (Math.Abs(AttributedFraction(0.25, 1.0, 0.75, 0.75) - 0.75) > 0.00001) throw new InvalidOperationException("Repaired attribution self-test failed.");
+            if (Math.Abs(AttributedFraction(1.0, 0.0, 0.0, 0.75) - 0.75) > 0.00001) throw new InvalidOperationException("Unknown attribution self-test failed.");
             if (Math.Abs(ReputationDiscount(1000, 500, 1500, 0.1) - 0.05) > 0.00001) throw new InvalidOperationException("Reputation discount self-test failed.");
             if (ReputationDiscount(500, 500, 1500, 0.1) != 0.0) throw new InvalidOperationException("Reputation minimum self-test failed.");
             if (Math.Abs(ReputationDiscount(2000, 500, 1500, 0.1) - 0.1) > 0.00001) throw new InvalidOperationException("Reputation maximum self-test failed.");

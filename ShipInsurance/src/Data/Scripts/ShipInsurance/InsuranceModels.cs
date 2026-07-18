@@ -6,12 +6,42 @@ using VRage.Game;
 
 namespace ShipInsurance
 {
+    public enum InsuranceDamageCause
+    {
+        Unknown,
+        Grinding,
+        Ramming,
+        Weapon,
+        Environment,
+        Other
+    }
+
+    public enum InsuranceDamageRelationship
+    {
+        Unknown,
+        Owner,
+        Faction,
+        Other,
+        Environment
+    }
+
     public sealed class InsuranceConfig
     {
         public long EnrollmentFlatFee = 0;
         public double EnrollmentValueFraction = 0.50;
         public double CancellationRefundFraction = 0.50;
         public double ClaimValueFraction = 1.00;
+        public double OwnerDamageClaimValueFraction = 1.00;
+        public double FactionDamageClaimValueFraction = 1.00;
+        public double OtherDamageClaimValueFraction = 0.75;
+        public double EnvironmentDamageClaimValueFraction = 0.75;
+        public double UnknownDamageClaimValueFraction = 0.75;
+        public double GrindingDamageClaimMultiplier = 1.00;
+        public double RammingDamageClaimMultiplier = 1.00;
+        public double WeaponDamageClaimMultiplier = 1.00;
+        public double EnvironmentDamageClaimMultiplier = 1.00;
+        public double OtherDamageClaimMultiplier = 1.00;
+        public double UnknownDamageClaimMultiplier = 1.00;
         public double MinimumLossRatio = 0.25;
         public long MinimumClaimFee = 0;
         public long DefaultComponentPrice = 100;
@@ -101,6 +131,8 @@ namespace ShipInsurance
         [ProtoMember(2)] public MyObjectBuilder_CubeGrid Blueprint;
         [ProtoMember(3)] public MyPositionAndOrientation RelativePose;
         [ProtoMember(4)] public string PersistentId;
+        [ProtoMember(5)] public List<BlockLossAttribution> DamageAttributions =
+            new List<BlockLossAttribution>();
     }
 
     [ProtoContract]
@@ -117,6 +149,26 @@ namespace ShipInsurance
         [ProtoMember(9)] public string DamageType;
         [ProtoMember(10)] public float DamageAmount;
         [ProtoMember(11)] public int EventCount = 1;
+        [ProtoMember(12)] public InsuranceDamageCause DamageCause;
+        [ProtoMember(13)] public InsuranceDamageRelationship DamageRelationship;
+    }
+
+    [ProtoContract]
+    public sealed class BlockLossAttribution
+    {
+        [ProtoMember(1)] public int X;
+        [ProtoMember(2)] public int Y;
+        [ProtoMember(3)] public int Z;
+        [ProtoMember(4)] public List<LossAttributionBucket> Buckets =
+            new List<LossAttributionBucket>();
+    }
+
+    [ProtoContract]
+    public sealed class LossAttributionBucket
+    {
+        [ProtoMember(1)] public InsuranceDamageCause Cause;
+        [ProtoMember(2)] public InsuranceDamageRelationship Relationship;
+        [ProtoMember(3)] public double IntegrityLossRatio;
     }
 
     [ProtoContract]
@@ -128,6 +180,45 @@ namespace ShipInsurance
         [ProtoMember(4)] public string Text;
         [ProtoMember(5)] public long ServiceTerminalId;
         [ProtoMember(6)] public List<PolicySummary> Policies;
+        [ProtoMember(7)] public ClaimLedger Ledger;
+    }
+
+    [ProtoContract]
+    internal sealed class ClaimLedger
+    {
+        [ProtoMember(1)] public long PolicyId;
+        [ProtoMember(2)] public string GridName;
+        [ProtoMember(3)] public bool Recovery;
+        [ProtoMember(4)] public long RepairValue;
+        [ProtoMember(5)] public long UnrepairableValue;
+        [ProtoMember(6)] public long AttributedSubtotal;
+        [ProtoMember(7)] public long FinalCost;
+        [ProtoMember(8)] public string FactionTag;
+        [ProtoMember(9)] public int FactionReputation;
+        [ProtoMember(10)] public bool DynamicRecoveryPrice;
+        [ProtoMember(11)] public bool RecoveryPriceLocked;
+        [ProtoMember(12)] public List<ClaimLedgerEntry> Entries =
+            new List<ClaimLedgerEntry>();
+        [ProtoMember(13)] public List<ClaimLedgerAdjustment> Adjustments =
+            new List<ClaimLedgerAdjustment>();
+        [ProtoMember(14)] public string Error;
+    }
+
+    [ProtoContract]
+    internal sealed class ClaimLedgerEntry
+    {
+        [ProtoMember(1)] public InsuranceDamageCause Cause;
+        [ProtoMember(2)] public InsuranceDamageRelationship Relationship;
+        [ProtoMember(3)] public long RepairValue;
+        [ProtoMember(4)] public double Rate;
+        [ProtoMember(5)] public long Cost;
+    }
+
+    [ProtoContract]
+    internal sealed class ClaimLedgerAdjustment
+    {
+        [ProtoMember(1)] public string Label;
+        [ProtoMember(2)] public long Amount;
     }
 
     [ProtoContract]
@@ -175,6 +266,7 @@ namespace ShipInsurance
         public int MissingBlocks;
         public int DamagedBlocks;
         public int ConflictingBlocks;
+        public long AttributedCost;
         public readonly List<RepairItem> Items = new List<RepairItem>();
 
         public double LossRatio => InsuranceMath.Ratio(LossValue, BaselineValue);
@@ -182,10 +274,12 @@ namespace ShipInsurance
 
     internal sealed class RepairItem
     {
+        public InsuredGridSnapshot InsuredGrid;
         public MyObjectBuilder_CubeBlock Snapshot;
         public VRage.Game.ModAPI.IMySlimBlock Existing;
         public VRage.Game.ModAPI.IMyCubeGrid Grid;
         public long LossValue;
+        public long ClaimCost;
         public double IntegrityDelta;
         public bool Missing;
     }
@@ -197,5 +291,7 @@ namespace ShipInsurance
         public long AttackerIdentityId;
         public string AttackerName;
         public string DamageType;
+        public InsuranceDamageCause DamageCause;
+        public InsuranceDamageRelationship DamageRelationship;
     }
 }

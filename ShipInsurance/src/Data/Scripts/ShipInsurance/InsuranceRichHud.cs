@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using RichHudFramework.Client;
 using RichHudFramework.UI;
 using RichHudFramework.UI.Client;
@@ -40,8 +41,7 @@ namespace ShipInsurance
             _terminalControls.ServiceChoicesChanged -= OnServiceChoicesChanged;
             if (_window != null)
             {
-                _window.Close();
-                _window.Unregister();
+                _window.Shutdown();
             }
             if (_scaleRoot != null) _scaleRoot.Unregister();
 
@@ -83,7 +83,7 @@ namespace ShipInsurance
 
         private void OnHudReset()
         {
-            if (_window != null) _window.Close();
+            if (_window != null) _window.Shutdown();
             _registered = false;
             _window = null;
             _scaleRoot = null;
@@ -127,6 +127,7 @@ namespace ShipInsurance
         private readonly ListBox<long> _targetList;
         private readonly BorderedButton _insureButton;
         private readonly BorderedButton _expediteButton;
+        private readonly InsuranceLedgerWindow _ledgerWindow;
         private IMyTerminalBlock _terminal;
         private Action _closed;
         private bool _refreshing;
@@ -135,6 +136,7 @@ namespace ShipInsurance
             : base(parent)
         {
             _terminalControls = terminalControls;
+            _terminalControls.LedgerReceived += OnLedgerReceived;
             HeaderText = "SHIP INSURANCE";
             // MyGuiScreenTerminal uses 1.0157 x 0.9172 of SE's 4:3 safe GUI area.
             Size = new Vector2(1463.62f, 990.576f);
@@ -182,11 +184,16 @@ namespace ShipInsurance
             PositionButton(claim, 456f, 58f, 440f);
 
             _expediteButton = AddPolicyButton("Expedite recovery", "expedite");
+            BorderedButton ledger = CreateButton(body, "Repair cost ledger", OpenLedger);
+            _policyButtons.Add(ledger);
             BorderedButton history = AddPolicyButton("Damage history", "history");
             BorderedButton cancel = AddPolicyButton("Cancel policy", "cancel");
-            PositionButton(_expediteButton, -456f, 12f, 440f);
-            PositionButton(history, 0f, 12f, 440f);
-            PositionButton(cancel, 456f, 12f, 440f);
+            PositionButton(_expediteButton, -522f, 12f, 330f);
+            PositionButton(ledger, -174f, 12f, 330f);
+            PositionButton(history, 174f, 12f, 330f);
+            PositionButton(cancel, 522f, 12f, 330f);
+
+            _ledgerWindow = new InsuranceLedgerWindow(parent, CloseLedger);
 
             UpdateButtonState();
         }
@@ -214,11 +221,20 @@ namespace ShipInsurance
         {
             Action closed = _closed;
             _closed = null;
+            _ledgerWindow.Hide();
             Visible = false;
             InputEnabled = false;
             _terminal = null;
             HudMain.EnableCursor = false;
             if (closed != null) closed();
+        }
+
+        internal void Shutdown()
+        {
+            _terminalControls.LedgerReceived -= OnLedgerReceived;
+            Close();
+            _ledgerWindow.Unregister();
+            Unregister();
         }
 
         internal void Refresh(bool force)
@@ -317,6 +333,147 @@ namespace ShipInsurance
         {
             if (_terminal == null) return;
             _terminalControls.ExecuteServiceAction(_terminal, command);
+        }
+
+        private void OpenLedger()
+        {
+            if (_terminal == null || !_terminalControls.HasSelectedPolicy(_terminal)) return;
+            InputEnabled = false;
+            _ledgerWindow.ShowLoading();
+            _terminalControls.RequestSelectedLedger(_terminal);
+        }
+
+        private void OnLedgerReceived(ClaimLedger ledger)
+        {
+            if (_ledgerWindow.Visible) _ledgerWindow.ShowLedger(ledger);
+        }
+
+        private void CloseLedger()
+        {
+            _ledgerWindow.Hide();
+            if (!Visible) return;
+            InputEnabled = true;
+            GetWindowFocus();
+        }
+    }
+
+    internal sealed class InsuranceLedgerWindow : WindowBase
+    {
+        private readonly ListBox<long> _rows;
+        private readonly Action _closed;
+
+        internal InsuranceLedgerWindow(HudParentBase parent, Action closed) : base(parent)
+        {
+            _closed = closed;
+            HeaderText = "REPAIR COST LEDGER";
+            Size = new Vector2(1180f, 760f);
+            MinimumSize = Size;
+            AllowResizing = false;
+            CanDrag = true;
+            BorderColor = new Color(82, 106, 119);
+            BodyColor = new Color(19, 27, 32, 252);
+            ZOffset = 20;
+            Visible = false;
+            InputEnabled = false;
+
+            _rows = new ListBox<long>(body)
+            {
+                Size = new Vector2(1144f, 635f),
+                ParentAlignment = ParentAlignments.InnerTop,
+                Offset = new Vector2(0f, -18f),
+                Color = new Color(28, 39, 46),
+                Format = TerminalFormatting.ControlFormat,
+                LineHeight = 34f,
+                MemberPadding = new Vector2(16f, 6f),
+                ListPadding = new Vector2(4f)
+            };
+
+            BorderedButton close = new BorderedButton(body)
+            {
+                Text = "Close ledger",
+                Size = new Vector2(300f, 38f),
+                AutoResize = false,
+                ParentAlignment = ParentAlignments.InnerBottom,
+                Offset = new Vector2(0f, 12f)
+            };
+            close.MouseInput.LeftClicked += delegate
+            {
+                if (_closed != null) _closed();
+            };
+        }
+
+        internal void ShowLoading()
+        {
+            HeaderText = "REPAIR COST LEDGER";
+            _rows.ClearEntries();
+            AddRow("Loading server quote...");
+            Visible = true;
+            InputEnabled = true;
+            GetWindowFocus();
+        }
+
+        internal void ShowLedger(ClaimLedger ledger)
+        {
+            _rows.ClearEntries();
+            if (ledger == null || !string.IsNullOrWhiteSpace(ledger.Error))
+            {
+                AddRow(ledger == null ? "Ledger response was empty." : ledger.Error);
+                return;
+            }
+
+            HeaderText = "REPAIR COST LEDGER — POLICY #" + ledger.PolicyId;
+            AddRow(ledger.GridName + "  |  " +
+                (ledger.Recovery ? "FULL RECOVERY" : "LOCAL REPAIR") +
+                (ledger.DynamicRecoveryPrice ? "  |  MARKET PRICED" : string.Empty) +
+                (ledger.RecoveryPriceLocked ? "  |  QUOTE LOCKED" : string.Empty));
+            if (!string.IsNullOrWhiteSpace(ledger.FactionTag))
+                AddRow("Economy faction " + ledger.FactionTag + "  |  reputation " +
+                    ledger.FactionReputation.ToString(CultureInfo.InvariantCulture));
+            AddRow("DAMAGE SOURCE / PARTY     REPAIR VALUE     RATE     CHARGE");
+
+            if (ledger.Entries == null || ledger.Entries.Count == 0)
+                AddRow("No billable repair damage.");
+            else
+                for (int i = 0; i < ledger.Entries.Count; i++)
+                {
+                    ClaimLedgerEntry entry = ledger.Entries[i];
+                    string source = entry.Cause + " / " + entry.Relationship;
+                    AddRow(source.PadRight(28) +
+                        InsuranceRuntime.Money(entry.RepairValue).PadLeft(13) + " SC  " +
+                        entry.Rate.ToString("P1", CultureInfo.InvariantCulture).PadLeft(7) + "  " +
+                        InsuranceRuntime.Money(entry.Cost).PadLeft(13) + " SC");
+                }
+
+            AddRow("Attributed subtotal".PadRight(48) +
+                InsuranceRuntime.Money(ledger.AttributedSubtotal).PadLeft(13) + " SC");
+            if (ledger.Adjustments != null)
+                for (int i = 0; i < ledger.Adjustments.Count; i++)
+                {
+                    ClaimLedgerAdjustment adjustment = ledger.Adjustments[i];
+                    string amount = adjustment.Amount < 0
+                        ? "-" + InsuranceRuntime.Money(-adjustment.Amount)
+                        : "+" + InsuranceRuntime.Money(adjustment.Amount);
+                    AddRow(adjustment.Label.PadRight(48) + amount.PadLeft(13) + " SC");
+                }
+            AddRow("FINAL REPAIR COST".PadRight(48) +
+                InsuranceRuntime.Money(ledger.FinalCost).PadLeft(13) + " SC");
+            AddRow("Repair component value".PadRight(48) +
+                InsuranceRuntime.Money(ledger.RepairValue).PadLeft(13) + " SC");
+            if (ledger.UnrepairableValue > 0)
+                AddRow("Conflicting blocks (not repaired/charged)".PadRight(48) +
+                    InsuranceRuntime.Money(ledger.UnrepairableValue).PadLeft(13) + " SC");
+        }
+
+        internal void Hide()
+        {
+            Visible = false;
+            InputEnabled = false;
+        }
+
+        private void AddRow(string text)
+        {
+            _rows.Add(new RichText(text ?? string.Empty,
+                TerminalFormatting.ControlFormat), _rows.Count + 1L);
         }
     }
 }
