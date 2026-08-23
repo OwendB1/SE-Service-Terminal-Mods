@@ -1,0 +1,75 @@
+name: Bug report
+description: Report a reproducible problem with either mod
+title: "[Bug]: "
+labels:
+  - bug
+assignees:
+  - OwendB1
+body:
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project
+      options:
+        - Ship Insurance
+        - Service Terminal Framework
+        - Both or unsure
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: Explain what happened and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the shortest reliable sequence that triggers the problem.
+      placeholder: |
+        1. Load a world with...
+        2. Use the Services Terminal to...
+        3. Observe...
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Mod and game versions
+      description: Include the Workshop version shown in the title and your Space Engineers version.
+      placeholder: Ship Insurance 1.0.0; Space Engineers 1.xxx.xxx
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Single player
+        - Player-hosted multiplayer
+        - Dedicated server
+        - Other or unsure
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste the relevant client and server SpaceEngineers.log excerpts and include their timestamps. You may also attach complete log files.
+      render: shell
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add screenshots, videos, mod lists, configuration details, or anything else that may help.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: I can reproduce this with the current Workshop version.
+          required: true

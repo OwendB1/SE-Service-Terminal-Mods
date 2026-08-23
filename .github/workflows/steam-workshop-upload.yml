@@ -1,26 +1,94 @@
-name: Upload Ship Insurance to Steam Workshop
+name: Upload Steam Workshop
 
 permissions:
   contents: read
+
+concurrency:
+  group: steam-workshop-upload
+  cancel-in-progress: false
 
 on:
   push:
     branches:
       - production
     paths:
-      - 'ShipInsurance/src/**'
-      - '.github/workflows/steam-workshop-upload.yml'
+      - .github/workflows/steam-workshop-upload.yml
+      - ServiceTerminalFramework/src/**
+      - ServiceTerminalFramework/workshop/**
+      - ShipInsurance/src/**
+      - ShipInsurance/workshop/**
   workflow_dispatch:
+    inputs:
+      target:
+        description: Which Workshop item to upload
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - service-terminal-framework
+          - ship-insurance
 
 jobs:
   upload:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - key: service-terminal-framework
+            mod_dir: ServiceTerminalFramework
+            src_dir: ServiceTerminalFramework/src
+            workshop_dir: ServiceTerminalFramework/workshop
+          - key: ship-insurance
+            mod_dir: ShipInsurance
+            src_dir: ShipInsurance/src
+            workshop_dir: ShipInsurance/workshop
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine whether this matrix target should upload
+        id: matrix_gate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SHOULD_UPLOAD=false
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.target }}" = "both" ] || [ "${{ github.event.inputs.target }}" = "${{ matrix.key }}" ]; then
+              SHOULD_UPLOAD=true
+            fi
+          else
+            BEFORE_SHA="${{ github.event.before }}"
+            CURRENT_SHA="${{ github.sha }}"
+
+            if [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+              if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+                if git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- ".github/workflows/steam-workshop-upload.yml" "${{ matrix.src_dir }}/" "${{ matrix.workshop_dir }}/" | grep -q .; then
+                  SHOULD_UPLOAD=true
+                fi
+              else
+                echo "Previous SHA '$BEFORE_SHA' is not available. Forcing upload to avoid missing Workshop updates."
+                SHOULD_UPLOAD=true
+              fi
+            else
+              if git ls-tree -r --name-only "$CURRENT_SHA" -- "${{ matrix.src_dir }}/" "${{ matrix.workshop_dir }}/" | grep -q .; then
+                SHOULD_UPLOAD=true
+              fi
+            fi
+          fi
+
+          echo "should_upload=$SHOULD_UPLOAD" >> "$GITHUB_OUTPUT"
+          echo "Matrix target '${{ matrix.key }}' upload decision: $SHOULD_UPLOAD"
 
       - name: Validate required secrets
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
@@ -29,23 +97,28 @@ jobs:
           [ -n "${STEAM_CONFIG_VDF:-}" ] || { echo "Missing secret: STEAM_CONFIG_VDF"; exit 1; }
           echo "::add-mask::$STEAM_CONFIG_VDF"
 
-      - name: Build upload content
+      - name: Build upload content and metadata
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         run: |
           set -euo pipefail
 
-          CONTENT_DIR="ShipInsurance/src"
-          MODINFO_FILE="$CONTENT_DIR/modinfo.sbmi"
-          STAGING="${RUNNER_TEMP}/ShipInsurance-upload"
+          STAGING="${RUNNER_TEMP}/${{ matrix.mod_dir }}-upload"
+          MODINFO_FILE="${{ matrix.src_dir }}/modinfo.sbmi"
+          TITLE_FILE="${{ matrix.workshop_dir }}/title.txt"
+          VERSION_FILE="${{ matrix.workshop_dir }}/version.txt"
+          DESCRIPTION_FILE="${{ matrix.workshop_dir }}/description.bbcode"
 
-          [ -d "$CONTENT_DIR" ] || { echo "Missing content folder: $CONTENT_DIR"; exit 1; }
-          [ -f "$MODINFO_FILE" ] || { echo "Missing workshop metadata: $MODINFO_FILE"; exit 1; }
+          [ -d "${{ matrix.src_dir }}" ] || { echo "Missing content folder: ${{ matrix.src_dir }}"; exit 1; }
+          for FILE in "$MODINFO_FILE" "$TITLE_FILE" "$VERSION_FILE" "$DESCRIPTION_FILE"; do
+            [ -f "$FILE" ] || { echo "Expected Workshop metadata file not found: $FILE"; exit 1; }
+          done
 
           WORKSHOP_ID="$(MODINFO_FILE="$MODINFO_FILE" python3 -c 'import xml.etree.ElementTree as ET, os; root = ET.parse(os.environ["MODINFO_FILE"]).getroot(); ids = root.findall(".//WorkshopIds/WorkshopId/Id"); print(((ids[0].text or "").strip()) if ids else "")')"
-          [ -n "$WORKSHOP_ID" ] && [ "$WORKSHOP_ID" != "0" ] || { echo "Set ShipInsurance/src/modinfo.sbmi Workshop ID before upload."; exit 1; }
+          [ -n "$WORKSHOP_ID" ] && [ "$WORKSHOP_ID" != "0" ] || { echo "Unable to resolve a valid Workshop ID from $MODINFO_FILE"; exit 1; }
 
           rm -rf "$STAGING"
           mkdir -p "$STAGING"
-          rsync -a --delete "$CONTENT_DIR/" "$STAGING/"
+          rsync -a --delete "${{ matrix.src_dir }}/" "$STAGING/"
 
           THUMBNAIL_FILE="$STAGING/thumb.png"
           [ -f "$THUMBNAIL_FILE" ] || { echo "Expected Workshop thumbnail not found: $THUMBNAIL_FILE"; exit 1; }
@@ -53,24 +126,70 @@ jobs:
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> "$GITHUB_ENV"
           echo "STAGING_DIR=$STAGING" >> "$GITHUB_ENV"
           echo "PREVIEW_FILE=$THUMBNAIL_FILE" >> "$GITHUB_ENV"
+          echo "WORKSHOP_TITLE_FILE=$TITLE_FILE" >> "$GITHUB_ENV"
+          echo "WORKSHOP_VERSION_FILE=$VERSION_FILE" >> "$GITHUB_ENV"
+          echo "WORKSHOP_DESCRIPTION_FILE=$DESCRIPTION_FILE" >> "$GITHUB_ENV"
 
       - name: Setup SteamCMD
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         uses: andriivitiv/setup-steamcmd@v1.2.0
 
       - name: Create SteamCMD upload script
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         run: |
-          cat > "$RUNNER_TEMP/workshop_item.vdf" <<EOF
-          "workshopitem"
-          {
-            "appid" "244850"
-            "publishedfileid" "${WORKSHOP_ID}"
-            "contentfolder" "${STAGING_DIR}"
-            "previewfile" "${PREVIEW_FILE}"
-            "changenote" "GitHub Actions build ${GITHUB_RUN_NUMBER} (${GITHUB_SHA})"
-          }
-          EOF
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          def read_single_line(path, label):
+              value = Path(path).read_text(encoding="utf-8").strip()
+              if not value or "\n" in value or "\r" in value:
+                  raise SystemExit(f"{label} must contain exactly one non-empty line")
+              return value
+
+          def escape_vdf(value):
+              return value.replace("\\", "\\\\").replace('"', '\\"')
+
+          base_title = read_single_line(os.environ["WORKSHOP_TITLE_FILE"], "Workshop title")
+          version = read_single_line(os.environ["WORKSHOP_VERSION_FILE"], "Workshop version")
+          if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
+              raise SystemExit("Workshop version must use semantic version format: " + version)
+
+          title = f"{base_title} ({version})"
+          description = Path(os.environ["WORKSHOP_DESCRIPTION_FILE"]).read_text(encoding="utf-8")
+          description = description.replace("\r\n", "\n").replace("\r", "\n").rstrip("\n")
+          title_bytes = len(title.encode("utf-8"))
+          description_bytes = len(description.encode("utf-8"))
+          if title_bytes > 128:
+              raise SystemExit(f"Workshop title exceeds Steam's 128-byte limit: {title_bytes}")
+          if description_bytes >= 8000:
+              raise SystemExit(f"Workshop description must be smaller than Steam's 8000-byte limit: {description_bytes}")
+
+          values = (
+              ("appid", "244850"),
+              ("publishedfileid", os.environ["WORKSHOP_ID"]),
+              ("contentfolder", os.environ["STAGING_DIR"]),
+              ("previewfile", os.environ["PREVIEW_FILE"]),
+              ("title", title),
+              ("description", description),
+              ("changenote", f"GitHub Actions build {os.environ['GITHUB_RUN_NUMBER']} ({os.environ['GITHUB_SHA']})"),
+          )
+          lines = ['"workshopitem"', "{"]
+          lines.extend(f'  "{key}" "{escape_vdf(value)}"' for key, value in values)
+          lines.append("}")
+          Path(os.environ["RUNNER_TEMP"], "workshop_item.vdf").write_text(
+              "\n".join(lines) + "\n", encoding="utf-8"
+          )
+
+          print(f"Publishing Workshop item {os.environ['WORKSHOP_ID']}")
+          print(f"Title: {title} ({title_bytes} bytes)")
+          print(f"Description: {description_bytes} bytes")
+          PY
 
       - name: Install SteamCMD cached credentials
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         env:
           STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
         run: |
@@ -80,7 +199,8 @@ jobs:
           printf '%s' "$STEAM_CONFIG_VDF" > "$HOME/Steam/config/config.vdf"
           chmod 600 "$HOME/Steam/config/config.vdf"
 
-      - name: Upload workshop item
+      - name: Upload Workshop item
+        if: ${{ steps.matrix_gate.outputs.should_upload == 'true' }}
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         run: steamcmd +login "$STEAM_USERNAME" +workshop_build_item "$RUNNER_TEMP/workshop_item.vdf" +quit

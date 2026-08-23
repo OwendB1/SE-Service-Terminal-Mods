@@ -1,0 +1,146 @@
+[img]https://i.imgur.com/fVVaDCS.gif[/img]
+[i]If you enjoy this mod, please rate it! Thank you.[/i]
+
+[h1]Ship Insurance[/h1]
+
+Ship Insurance adds server-authoritative grid insurance, paid repairs, and ship recovery to the Economy 2 Services Terminal.
+
+Insure a ship through the terminal and the mod records a clean snapshot of its complete mechanically connected grid group. Later damage can be repaired through an insurance claim, while destroyed, missing, or critically damaged ships can be recovered from their saved snapshot.
+
+Policies cover rotors, pistons, connectors within the captured mechanical group, and other attached subgrids present when the policy is created. Added cargo and consumable resources are not duplicated.
+
+[h3]Your ship can be rebuilt. Your cargo, ammunition, fuel, and other consumables cannot.[/h3]
+
+[h2]Dependencies[/h2]
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3765483498]Service Terminal Framework[/url]
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081]Rich HUD Master[/url]
+
+[h2]Features[/h2]
+
+[list]
+[*]Insure ships through the physical Economy 2 Services Terminal.
+[*]Covers the complete mechanically linked grid group captured at enrollment.
+[*]Supports vanilla and modded blocks through component-based valuation.
+[*]Tracks missing blocks, damaged integrity, and damage attribution.
+[*]Displays policies, uninsured ships, quotes, status, and history in one Rich HUD interface.
+[*]Repairs eligible damage without deleting unrelated player modifications.
+[*]Provides full recovery for destroyed, missing, or critically damaged ships.
+[*]Supports paid remote transport to another Services Terminal.
+[*]Displays transport arrival times and optional paid expedition.
+[*]Supports configurable player-wide insurance cooldowns based on service cost.
+[*]Supports configurable faction-reputation discounts at NPC economy stations.
+[*]Can use active economy-station component offers for dynamic recovery pricing.
+[*]Refunds 50% of the paid enrollment price when an unused policy is cancelled by default.
+[/list]
+
+[h2]How Insurance Works[/h2]
+
+Enrollment records sanitized snapshots of every mechanically linked grid in the insured group. The largest grid becomes the policy anchor, while relative positions preserve attached subgrids.
+
+Insurance values are calculated from the components required to build each block. Prices for all loaded vanilla and modded components are generated into the server configuration and can be edited by administrators.
+
+Claims unlock after the configured amount of covered value has been lost. The default threshold is 25%.
+
+Missing blocks contribute their insured value. Damaged blocks contribute the value of their lost integrity. A conflicting replacement block prevents the claim until that block is removed; the mod will not silently delete player changes.
+
+Loss above 80%, a missing insured grid, or total destruction becomes a full recovery instead of a normal repair.
+
+[h2]Single-Use Policies and Cooldowns[/h2]
+
+Every successful repair or recovery uses up its policy.
+
+Ordering remote transport commits and uses the policy immediately, although it remains visible until the recovered ship can be delivered.
+
+Repair, recovery, and transport also start a player-wide insurance cooldown based on the credit value of the service. Players may purchase another policy during this cooldown but cannot use another insurance service until it expires.
+
+[h2]Economy and Faction Integration[/h2]
+
+Server administrators can optionally connect insurance pricing to the NPC faction operating an economy station.
+
+Player reputation can reduce enrollment and full-recovery prices up to a configurable maximum discount. Repair, transport, and expedite fees remain unchanged.
+
+Dynamic recovery pricing can value components using the station's cheapest active offers. Components not sold by the station fall back to their configured insurance price.
+
+Remote recovery prices are locked when transport is ordered, preventing later market or reputation changes from altering the arrival quote.
+
+[h2]Remote Recovery[/h2]
+
+Destroyed or unreachable ships can be transported to the Services Terminal currently being used.
+
+Transport price and arrival time scale with distance. Players can pay to expedite an active order. Once the ship arrives, the recovery charge can be paid to deploy the insured group into clear space near that same terminal.
+
+Uninsured grids blocking the recovery area prevent deployment, protecting nearby ships and grids attached after enrollment.
+
+[h2]Cancellation Refunds[/h2]
+
+Cancelling an unused policy refunds 50% of the enrollment price actually paid by default.
+
+Server administrators can configure the refund percentage from 0% to 100%. Policies already used for repair, recovery, or transport receive no cancellation refund.
+
+[h2]Server Configuration[/h2]
+
+The server generates [b]ShipInsuranceConfig.xml[/b] in world storage on first start.
+
+Administrators can configure:
+
+[list]
+[*]Enrollment and claim prices.
+[*]Cancellation refund percentage.
+[*]Minimum covered-loss threshold.
+[*]Component prices.
+[*]Maximum policies per player.
+[*]Full and remote recovery.
+[*]Remote transport price and duration.
+[*]Expedite price and time reduction.
+[*]Insurance cooldown scaling and limits.
+[*]Faction reputation thresholds and maximum discount.
+[*]Dynamic economy-station recovery pricing.
+[/list]
+
+Use [b]/insurance reload[/b] to reload the configuration without restarting the world. Admin rank is required.
+
+[h2]Common Questions[/h2]
+
+How do I insure my ship?
+Use an Economy 2 Services Terminal, select Ship Insurance, choose a nearby uninsured grid group, and purchase the policy.
+
+Does it include subgrids?
+Yes. Every mechanically linked grid present during enrollment is stored as part of the policy.
+
+Does it restore cargo?
+No. Inventories, construction stockpiles, ammunition, fuel, battery charge, and similar consumables are cleared from snapshots.
+
+Can it recover a completely destroyed ship?
+Yes, provided full recovery is enabled by the server.
+
+What happens to blocks added after enrollment?
+They are not added to the policy snapshot. Normal repairs leave them untouched. Conflicting blocks must be removed before a claim can proceed.
+
+Can reputation reduce prices?
+Yes, when economy-faction pricing is enabled. The discount applies to enrollment and full-recovery value charges.
+
+Is each policy reusable?
+No. A completed repair or recovery uses the policy. Remote transport uses it when the order is placed.
+
+Can I cancel a policy?
+Yes. An unused policy refunds 50% of its paid enrollment price by default. The server can configure this percentage.
+
+Does it work on multiplayer servers?
+Yes. Insurance state, policy snapshots, cooldowns, pricing, and claims are controlled by the server and persist with the world.
+
+If you have questions or need assistance, stop by our [url=https://discord.com/invite/EUDeV4xhBC]Discord[/url]!
+
+[url=https://github.com/OwendB1/SE-Service-Terminal-Mods/issues]Bug Reports[/url]
+
+Other Mods:
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3765483498]Service Terminal Framework[/url]: A shared menu and API for adding modded services to the Economy 2 Services Terminal.
+
+[B]COPYRIGHT exclusive ODB-TECH[/B]
+
+[u]This Workshop item cannot be redistributed without explicit permission.
+This item is not authorized for reposting on Steam or mod.io.[/u]
+
+#ShipInsurance #GridInsurance #ShipRecovery #Economy2 #ServicesTerminal #SpaceEngineers

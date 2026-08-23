@@ -1,0 +1,42 @@
+name: Other
+description: Ask about documentation, compatibility, or anything not covered above
+title: "[Other]: "
+assignees:
+  - OwendB1
+body:
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Documentation
+        - Mod compatibility
+        - Server configuration
+        - API integration
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project
+      options:
+        - Ship Insurance
+        - Service Terminal Framework
+        - Both or unsure
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Tell us what you need and include any relevant context.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for the same topic.
+          required: true

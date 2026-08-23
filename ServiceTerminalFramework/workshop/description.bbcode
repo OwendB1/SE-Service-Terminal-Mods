@@ -1,0 +1,76 @@
+[img]https://i.imgur.com/fVVaDCS.gif[/img]
+[i]If you enjoy this mod, please rate it! Thank you.[/i]
+
+[h1]Service Terminal Framework[/h1]
+
+Service Terminal Framework turns the Economy 2 Services Terminal into a shared access point for vanilla services and services added by other mods.
+
+Interacting with a Services Terminal opens a centered service-selection menu with large, easy-to-read buttons. After selecting a custom service, the menu becomes a responsive side navigation. On narrow displays it folds into a compact rail that can be expanded when needed.
+
+The framework retains the original Keen interaction instead of replacing the terminal block or model. Selecting [b]Vanilla services[/b] opens the original Services Terminal screen normally.
+
+[h3]One terminal, one consistent menu, any number of registered mod services.[/h3]
+
+[h2]Features[/h2]
+
+[list]
+[*]Centered service-selection menu with wide buttons.
+[*]Preserves access to Keen's vanilla Services screen.
+[*]Supports multiple services registered by other mods.
+[*]Responsive side navigation while a custom service is open.
+[*]Compact folding navigation for narrower aspect ratios.
+[*]Restores the player's previous HUD state when a service closes.
+[*]Preserves the terminal's original secondary interactions and HUD hints.
+[*]Falls back to vanilla Services if Rich HUD is unavailable.
+[*]Does not replace or modify the Services Terminal block definition or model.
+[/list]
+
+[h2]Dependencies[/h2]
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=1965654081]Rich HUD Master[/url]
+
+[h2]Mods Using This Framework[/h2]
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3765484640]Ship Insurance[/url] adds persistent grid insurance, paid repairs, recovery, remote transport, faction discounts, and economy-driven pricing to the Services Terminal.
+
+[h2]Service Terminal Framework - MODAPI[/h2]
+
+Other mods can register their own service name and client-side interface through the framework's mod-message API.
+
+The API uses only game and standard library types. Provider mods do not require a compile-time reference to the framework assembly, and registration handles either mod load order.
+
+Provider names are sorted alphabetically, while Vanilla services always remains available first.
+
+Full API documentation and example code:
+[url=https://github.com/OwendB1/SE-Service-Terminal-Mods/tree/production/ServiceTerminalFramework]Service Terminal Framework GitHub Documentation[/url]
+
+[h2]Common Questions[/h2]
+
+What does this mod add by itself?
+It provides the shared Services Terminal menu and keeps Vanilla services available. Additional custom options appear when compatible provider mods are enabled.
+
+Does this replace the Economy 2 Services Terminal?
+No. It attaches a reversible interaction proxy to live terminals without replacing their block definitions, models, or original service interaction.
+
+What happens if Rich HUD is unavailable?
+The original Vanilla services interaction opens normally.
+
+Can multiple mods use the framework at once?
+Yes. Each provider registers a stable ID and display name. Registered services appear together in the same menu.
+
+Does mod load order matter?
+No. The registration handshake supports both framework-first and provider-first loading.
+
+Can servers use it?
+Yes. Add the framework and its provider mods to the world normally. Clients receive the required Workshop mods through the server.
+
+If you have questions or need assistance, stop by our [url=https://discord.com/invite/EUDeV4xhBC]Discord[/url]!
+
+[url=https://github.com/OwendB1/SE-Service-Terminal-Mods/issues]Bug Reports[/url]
+
+[B]COPYRIGHT exclusive ODB-TECH[/B]
+
+[u]This Workshop item cannot be redistributed without explicit permission.
+This item is not authorized for reposting on Steam or mod.io.[/u]
+
+#ServicesTerminal #ServiceFramework #ModAPI #Economy2 #RichHUD #SpaceEngineers
