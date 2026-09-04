@@ -343,7 +343,8 @@ namespace ServiceTerminalFramework
             try
             {
                 entry.SetActive(terminal, user, true,
-                    delegate { OnProviderClosed(entry); });
+                    delegate { OnProviderClosed(entry); },
+                    delegate { CloseSession(entry); });
                 if (_activeEntry == entry) HideGameplayHud();
             }
             catch (Exception exception)
@@ -354,6 +355,7 @@ namespace ServiceTerminalFramework
                     "The selected terminal service failed to open.", 4000);
             }
 
+            if (!Visible) return;
             if (_automaticallyFolded) _drawerOpen = false;
             Rebuild();
             HudMain.EnableCursor = true;
@@ -369,7 +371,7 @@ namespace ServiceTerminalFramework
 
             try
             {
-                entry.SetActive(terminal, user, false, null);
+                entry.SetActive(terminal, user, false, null, null);
             }
             catch (Exception exception)
             {
@@ -386,6 +388,11 @@ namespace ServiceTerminalFramework
             if (_automaticallyFolded) _drawerOpen = false;
             Rebuild();
             HudMain.EnableCursor = true;
+        }
+
+        private void CloseSession(ServiceEntry entry)
+        {
+            if (_activeEntry == entry) Hide();
         }
 
         private void HideGameplayHud()

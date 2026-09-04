@@ -7,8 +7,10 @@ using VRage.ModAPI;
 
 namespace ServiceTerminalFramework
 {
-    using Registration = MyTuple<string, string,
+    using LegacyRegistration = MyTuple<string, string,
         Action<IMyTerminalBlock, IMyEntity, bool, Action>>;
+    using Registration = MyTuple<string, string,
+        Action<IMyTerminalBlock, IMyEntity, bool, Action, Action>>;
 
     internal sealed class FrameworkApi
     {
@@ -53,16 +55,37 @@ namespace ServiceTerminalFramework
                 return;
             }
 
-            if (!(message is Registration)) return;
-            Registration registration = (Registration)message;
-            if (string.IsNullOrWhiteSpace(registration.Item1) ||
-                string.IsNullOrWhiteSpace(registration.Item2) || registration.Item3 == null)
+            if (message is Registration)
+            {
+                Registration registration = (Registration)message;
+                Register(registration.Item1, registration.Item2, registration.Item3);
+                return;
+            }
+
+            if (message is LegacyRegistration)
+            {
+                LegacyRegistration registration = (LegacyRegistration)message;
+                Action<IMyTerminalBlock, IMyEntity, bool, Action> setActive =
+                    registration.Item3;
+                if (setActive == null) return;
+                Register(registration.Item1, registration.Item2,
+                    delegate(IMyTerminalBlock terminal, IMyEntity user, bool active,
+                        Action closed, Action closeSession)
+                    {
+                        setActive(terminal, user, active, closed);
+                    });
+            }
+        }
+
+        private void Register(string id, string name,
+            Action<IMyTerminalBlock, IMyEntity, bool, Action, Action> setActive)
+        {
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(name) ||
+                setActive == null)
                 return;
 
-            _entries[registration.Item1] = new ServiceEntry(registration.Item1,
-                registration.Item2, registration.Item3);
-            FrameworkSession.Log("Registered service " + registration.Item1 + " (" +
-                registration.Item2 + ")");
+            _entries[id] = new ServiceEntry(id, name, setActive);
+            FrameworkSession.Log("Registered service " + id + " (" + name + ")");
             NotifyChanged();
         }
 
@@ -77,10 +100,10 @@ namespace ServiceTerminalFramework
     {
         internal readonly string Id;
         internal readonly string Name;
-        internal readonly Action<IMyTerminalBlock, IMyEntity, bool, Action> SetActive;
+        internal readonly Action<IMyTerminalBlock, IMyEntity, bool, Action, Action> SetActive;
 
         internal ServiceEntry(string id, string name,
-            Action<IMyTerminalBlock, IMyEntity, bool, Action> setActive)
+            Action<IMyTerminalBlock, IMyEntity, bool, Action, Action> setActive)
         {
             Id = id;
             Name = name;
